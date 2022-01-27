@@ -1,0 +1,91 @@
+{
+  "kind": "cluster",	
+  "name": "kir-test",
+  "clusterType": "WORKLOAD",
+  "clusterTemplateId": "Test-WL-Cluster",
+  "hcxCloudUrl": "wl",
+  "vmTemplate": "photon-3-kube-v1.20.5-vmware.2-tkg.1-3176963957469777230",
+  "endpointIP": "10.0.5.135",
+  "placementParams": [
+    {
+      "type": "Folder",
+      "name": "wl"
+    },
+    {
+      "type": "Datastore",
+      "name": "wl-ds-vsan01"
+    },
+    {
+      "type": "ResourcePool",
+      "name": "rp-tkg"
+    },
+    {
+      "type": "ClusterComputeResource",
+      "name": "wl-cl01"
+    }
+  ],
+  "clusterConfig": {
+    "csi": [
+      {
+        "name": "vsphere-csi",
+        "properties": {
+          "datastoreUrl": "ds:///vmfs/volumes/vsan:7cb55971133445b4-b4b72482ad062883/"
+        }	
+      }
+    ]
+  },
+  "managementClusterId": "m1-cluster",
+  "clusterPassword": "VMware1!",
+  "masterNodes": [
+    {
+      "name": "master",
+      "placementParams": [
+        {
+          "type": "ClusterComputeResource",
+          "name": "wl-cl01"
+        },
+        {
+          "type": "Datastore",
+          "name": "wl-ds-vsan01"
+        },
+        {
+          "type": "ResourcePool",
+          "name": "rp-tkg"
+        }
+      ],
+      "networks": [
+        {
+          "label": "MANAGEMENT",
+          "networkName": "cluster-wl2",
+          "nameservers": []
+        }
+      ]
+    }
+  ],
+  "workerNodes": [
+    {
+      "name": "np1",
+      "placementParams": [
+        {
+          "type": "ClusterComputeResource",
+          "name": "wl-cl01"
+        },
+        {
+          "type": "Datastore",
+          "name": "wl-ds-vsan01"
+        },
+        {
+          "type": "ResourcePool",
+          "name": "rp-tkg"
+        }
+      ],
+      "networks": [
+        {
+          "label": "MANAGEMENT",
+          "networkName": "cluster-wl2",
+          "nameservers": []
+        }
+      ]
+    }
+  ]
+}
