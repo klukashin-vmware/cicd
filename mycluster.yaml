@@ -1,0 +1,57 @@
+kind: cluster
+name: kir-test01
+managementClusterId: m1-cluster
+clusterPassword: VMware1!
+# we can use name or id c3e006c1-e6aa-4591-950b-6f3bedd944d3
+clusterTemplateId: Test-WL-Cluster
+clusterType: workload
+clusterConfig:
+    csi:
+        - name: vsphere-csi
+          properties:
+            datastoreUrl: ds:///vmfs/volumes/vsan:7cb55971133445b4-b4b72482ad062883/
+hcxCloudUrl: wl
+endpointIP: 10.0.5.135                             # cluster ip
+vmTemplate: photon-3-kube-v1.20.5-vmware.2-tkg.1-3176963957469777230     # template vm
+# you will need adjust all placement
+masterNodes:
+    - name: master
+      networks:
+        - label: MANAGEMENT
+          networkName: cluster-wl2   # where to connect master node
+          nameservers:
+            - 10.0.2.165
+      placementParams:
+        - name: wl
+          type: Folder
+        - name: wl-ds-vsan01
+          type: Datastore
+        - name: rp-tkg
+          type: ResourcePool
+        - name: wl-cl01
+          type: ClusterComputeResourcel
+workerNodes:
+    - name: np1
+      networks:
+        - label: MANAGEMENT
+          networkName: cluster-wl2
+          nameservers:
+            - 10.0.2.165
+      placementParams:
+        - name: wl
+          type: Folder
+        - name: wl-ds-vsan01
+          type: Datastore
+        - name: rp-tkg
+          type: ResourcePool
+        - name: wl-cl01
+          type: ClusterComputeResource
+placementParams:
+  - name: wl
+    type: Folder
+  - name: wl-ds-vsan01
+    type: Datastore
+  - name: rp-tkg
+    type: ResourcePool
+  - name: wl-cl01
+    type: ClusterComputeResource
