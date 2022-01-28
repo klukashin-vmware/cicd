@@ -5,7 +5,7 @@
   "clusterTemplateId": "Test-WL-Cluster",
   "hcxCloudUrl": "wl",
   "vmTemplate": "photon-3-kube-v1.20.5-vmware.2-tkg.1-3176963957469777230",
-  "endpointIP": "10.0.5.18",
+  "endpointIP": "10.0.5.202",
   "placementParams": [
     {
       "type": "Folder",
