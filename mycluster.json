@@ -35,8 +35,8 @@
     ]   
   },
   "airgapConfig": {
-    "type": "repo",
-    "fqdn": "harbor.rogers.lab"  
+    "type": "extention",
+    "extentionId": "Airgap-Harbor"
   },  
   "managementClusterId": "m1-cluster",
   "clusterPassword": "VMware1!",
