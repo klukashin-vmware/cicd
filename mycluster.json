@@ -32,17 +32,12 @@
           "datastoreUrl": "ds:///vmfs/volumes/vsan:7cb55971133445b4-b4b72482ad062883/"
         }	
       }
-    ],
-    "tools": [
-      {
-        "name": "harbor",
-        "properties": {
-          "type": "extension",
-          "extensionId": "https://harbor.rogers.lab/chartrepo/library"
-        }
-      }
-    ]    
+    ]   
   },
+  "airgapConfig": {
+    "type": "repo",
+    "fqdn": "harbor.rogers.lab"  
+  },  
   "managementClusterId": "m1-cluster",
   "clusterPassword": "VMware1!",
   "masterNodes": [
