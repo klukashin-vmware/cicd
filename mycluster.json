@@ -38,7 +38,7 @@
         "name": "harbor",
         "properties": {
           "type": "extension",
-          "extensionId": "https://harbor.rogers.lab"
+          "extensionId": "https://harbor.rogers.lab/chartrepo/library"
         }
       }
     ]    
