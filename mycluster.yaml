@@ -11,7 +11,7 @@ clusterConfig:
           properties:
             datastoreUrl: ds:///vmfs/volumes/vsan:7cb55971133445b4-b4b72482ad062883/
 hcxCloudUrl: wl
-endpointIP: 10.0.5.135                             # cluster ip
+endpointIP: 10.0.5.18                             # cluster ip
 vmTemplate: photon-3-kube-v1.20.5-vmware.2-tkg.1-3176963957469777230     # template vm
 # you will need adjust all placement
 masterNodes:
