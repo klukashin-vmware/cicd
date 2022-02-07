@@ -20,4 +20,4 @@ jobs:
     params:
       interpreter: /bin/sh
       script: |
-        git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./concourse/ansible/deploy-ako-playbook.yaml && rm -rf cicd
+        git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-deploy-ako.yaml && rm -rf cicd
