@@ -1,0 +1,13 @@
+---
+
+tca_validate_certificates: no
+tca_fqdn: 10.0.2.166
+tca_username: administrator@vsphere.local
+tca_password: R0gers!23VMware1!
+
+maxSessionTimeSeconds: 1800
+api_session_file_path: "{{ playbook_dir }}/../../../generated_tci_apisession_cache.yml"
+time_zone: America/Los_Angeles
+
+debuglevel: 2
+
