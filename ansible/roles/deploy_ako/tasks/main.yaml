@@ -1,0 +1,44 @@
+---
+
+- name: Create CNF isntance resource
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/telco/api/vnflcm/v2/vnf_instances"
+    method: POST
+    body: "{{ lookup('file','cnf_resource.json') }}"
+    return_content: yes
+    status_code: [200, 201]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+      Version: v2
+  register: tca_vnf_results
+
+- debug: var=tca_vnf_results.json
+  when: debuglevel | int > 4
+
+- set_fact:
+    instance_id: "{{ tca_vnf_results.json.id }}"
+
+- name: Instantiate CNF
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/telco/api/vnflcm/v2/vnf_instances/{{ instance_id  }}/instantiate"
+    method: POST
+    body: "{{ lookup('file','cnf_instantiate.json') }}"
+    return_content: yes
+    status_code: [200, 201, 202]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+      Version: v2
+  register: tca_vnf_instantiate_results
+
+- debug: var=tca_vnf_instantiate_results
+  when: debuglevel | int > 4
