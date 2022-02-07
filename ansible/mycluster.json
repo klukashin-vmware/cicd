@@ -1,5 +1,5 @@
 {
-  "name": "kir-test1-ansible",
+  "name": "test-kir2",
   "clusterType": "WORKLOAD",
   "clusterTemplateId": "7895b5d9-c542-46da-9df7-ef10cbdc14b3",
   "hcxCloudUrl": "https://tca-cp-wl.rogers.lab",
