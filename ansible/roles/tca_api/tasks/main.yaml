@@ -1,0 +1,33 @@
+---
+
+- debug: var=tca_password
+
+- debug: var=tca_username
+
+- name: Get TCA Token
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/hybridity/api/sessions"
+    method: POST
+    body:
+      username: "{{ tca_username }}"
+      password: "{{ tca_password }}"
+    return_content: yes
+    status_code: [200]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"     
+  register: tca_token_results
+
+- debug: var=tca_token_results
+  when: debuglevel | int > 4
+
+- set_fact:
+    tca_authorization: "{{ tca_token_results.x_hm_authorization }}"
+    tca_cookie: "{{ tca_token_results.set_cookie }}"
+
+- debug: var=tca_authorization
+  when: debuglevel | int > 0
+
