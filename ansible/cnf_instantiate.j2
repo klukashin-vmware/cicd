@@ -1,0 +1,29 @@
+{
+  "flavourId": "default",
+  "vimConnectionInfo": [
+    {
+      "id": "vmware_3841814CA3EB4568A83D1BC906F6B963",
+      "vimType": ""
+    }
+  ],
+  "additionalParams": {
+    "vduParams": [
+      {
+        "namespace": "avi-system",
+        "repoUrl": "https://harbor.rogers.lab/chartrepo/avi",
+        "username": "admin",
+        "password": "R0gers!23",
+	"chartName": "ako",	
+        "metadata": [
+          {
+            "values": "{{ lookup('file','values.base64') }}"
+          }
+        ],
+        "vduName": "ako"
+      }
+    ],
+    "disableGrant": false,
+    "ignoreGrantFailure": true,
+    "disableAutoRollback": false
+  }
+}
