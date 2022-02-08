@@ -23,6 +23,14 @@
 - set_fact:
     instance_id: "{{ tca_vnf_results.json.id }}"
 
+- name: encode values.yaml
+  shell: echo {{ lookup('file','values.yaml') | b64encode }} > values.base64
+
+- name: generate template
+  template:
+    src: cnf_instantiate.j2
+    dest: cnf_instantiate.json
+
 - name: Instantiate CNF
   uri:
     validate_certs: "{{ tca_validate_certificates }}"
