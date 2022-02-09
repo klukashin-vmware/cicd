@@ -64,7 +64,7 @@ L4Settings:
 
 ### This section outlines settings on the Avi controller that affects AKO's functionality.
 ControllerSettings:
-  serviceEngineGroupName: "Default-Group" # Name of the ServiceEngine Group.
+  serviceEngineGroupName: "TEST-KIR1" # Name of the ServiceEngine Group.
   controllerVersion: "20.1.3" # The controller API version
   cloudName: "NSXT_SRV" # The configured cloud name on the Avi controller.
   controllerHost: "10.0.2.144" # IP address or Hostname of Avi Controller
