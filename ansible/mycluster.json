@@ -4,7 +4,7 @@
   "clusterTemplateId": "Test-WL-Cluster",
   "hcxCloudUrl": "https://tca-cp-wl.rogers.lab",
   "vmTemplate": "photon-3-kube-v1.20.5-vmware.2-tkg.1-3176963957469777230",
-  "endpointIP": "10.0.5.203",
+  "endpointIP": "10.249.235.193",
   "placementParams": [
     {
       "type": "Folder",
@@ -59,7 +59,7 @@
       "networks": [
         {
           "label": "MANAGEMENT",
-          "networkName": "cluster-wl2",
+          "networkName": "srv-test-clusters",
           "nameservers": []
         }
       ]
@@ -85,7 +85,7 @@
       "networks": [
         {
           "label": "MANAGEMENT",
-          "networkName": "cluster-wl2",
+          "networkName": "srv-test-clusters",
           "nameservers": []
         }
       ]
