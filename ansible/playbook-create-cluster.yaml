@@ -6,6 +6,6 @@
   vars_files:
     - ./default/main.yaml
   roles:
-    - { role: tca_api  }
-    - { role: tca_ids  }    
-    - { role: create_cluster  }      
+    - { role: tca_api }
+    - { role: tca_ids }    
+    - { role: create_cluster }      
