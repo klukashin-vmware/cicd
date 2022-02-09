@@ -6,5 +6,6 @@
   vars_files:
     - ./default/main.yaml
   roles:
-    - { role: tca_api  }
-    - { role: deploy_ako  }      
+    - { role: tca_api }
+    - { role: tca_ids_cnf }    
+    - { role: deploy_ako }      
