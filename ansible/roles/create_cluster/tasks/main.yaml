@@ -1,5 +1,10 @@
 ---
 
+- name: generate template
+  template:
+    src: mycluster.j2
+    dest: mycluster.json
+
 - name: Create TKG Cluster
   uri:
     validate_certs: "{{ tca_validate_certificates }}"
