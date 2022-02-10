@@ -1,0 +1,22 @@
+---
+- name: Get a new available IP inside VIP Prefix
+  netbox_ip_address:
+    netbox_url: http://10.0.2.165:8000
+    netbox_token: d15bb17a8b1a3044d5c950e32e23f2bf87e48944
+    data:
+      prefix: 10.249.235.192/30
+      description: This is the VIP for "{{ cluster_name }}" cluster
+      status: Reserved      
+    state: new
+
+  register: netbox_getIP_results
+
+- debug: var=netbox_getIP_results
+  when: debuglevel | int > 0
+
+- set_fact:
+    ip_address: "{{ netbox_getIP_results.ip_address.address | regex_replace('/30') }}"
+
+- debug: var=ip_address
+
+
