@@ -20,4 +20,4 @@ jobs:
     params:
       interpreter: /bin/sh
       script: |
-        git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-create-cluster.yaml && rm -rf cicd
+        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-create-cluster.yaml && rm -rf cicd
