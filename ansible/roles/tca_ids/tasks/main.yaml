@@ -1,10 +1,11 @@
 ---
 - name: read cluster template name and management cluster from input file
   vars: 
-    cluster_config_file: "{{ lookup('file','mycluster.json') | from_json }}"
+    cluster_config_file: "{{ lookup('file','mycluster.j2') | from_json }}"
   set_fact:
     cluster_template_name: "{{ cluster_config_file.clusterTemplateId }}"
-    management_cluster_name: "{{ cluster_config_file.managementClusterId }}"       
+    management_cluster_name: "{{ cluster_config_file.managementClusterId }}"
+    cluster_name: "{{ cluster_config_file.name }}"    
 
 - debug: var=cluster_template_name
 - debug: var=management_cluster_name
@@ -57,13 +58,13 @@
 
 - name: replace
   replace:
-    path: mycluster.json
+    path: mycluster.j2
     regexp: "{{ cluster_template_name }}"
     replace: "{{ cluster_template_id }}"
 
 - name: replace
   replace:
-    path: mycluster.json
+    path: mycluster.j2
     regexp: "{{ management_cluster_name }}"
     replace: "{{ management_cluster_id }}"
 
