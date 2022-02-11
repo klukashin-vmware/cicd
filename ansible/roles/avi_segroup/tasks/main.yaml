@@ -9,7 +9,7 @@
 - debug: var=avi_segroup_name
 - debug: var=avi_cloud_name
 
-- name: Example to create ServiceEngineGroup object
+- name: Create ServiceEngineGroup in AVI
   community.network.avi_serviceenginegroup:
     controller: 10.0.2.144
     username: admin
