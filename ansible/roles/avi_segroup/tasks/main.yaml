@@ -1,0 +1,25 @@
+---
+- name: read avi params from values file
+  vars:
+    values_file: "{{ lookup('file','values.yaml') | from_yaml }}"
+  set_fact:
+    avi_segroup_name: "{{ values_file.ControllerSettings.serviceEngineGroupName }}"
+    avi_cloud_name: "{{ values_file.ControllerSettings.cloudName }}"    
+
+- debug: var=avi_segroup_name
+- debug: var=avi_cloud_name
+
+- name: Example to create ServiceEngineGroup object
+  community.network.avi_serviceenginegroup:
+    controller: 10.0.2.144
+    username: admin
+    password: R0gers!23VMware1!
+    state: present
+    name: "{{ avi_segroup_name }}"
+    cloud_ref: https://10.0.2.144/api/cloud/?name={{ avi_cloud_name }}
+    ha_mode: "HA_MODE_SHARED_PAIR"
+    min_scaleout_per_vs: 2
+  register: avi_segroup_results
+
+- debug: var=avi_segroup_results
+  when: debuglevel | int > 0
