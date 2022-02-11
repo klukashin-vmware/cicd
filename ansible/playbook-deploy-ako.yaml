@@ -7,5 +7,6 @@
     - ./default/main.yaml
   roles:
     - { role: tca_api }
-    - { role: tca_ids_cnf }    
+    - { role: tca_ids_cnf }
+    - { role: avi_segroup }        
     - { role: deploy_ako }      
