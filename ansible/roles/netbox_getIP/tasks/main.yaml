@@ -15,7 +15,7 @@
   when: debuglevel | int > 0
 
 - set_fact:
-    ip_address: "{{ netbox_getIP_results.ip_address.address | regex_replace('/30') }}"
+    ip_address: "{{ netbox_getIP_results.ip_address.address | regex_replace('/[0-9][0-9]') }}"
 
 - debug: var=ip_address
 
