@@ -1,0 +1,13 @@
+---
+- name: "Add static route to T1 GW and SNAT Rules"
+  hosts: localhost
+  gather_facts: no
+
+  vars_files:
+    - ./default/main.yaml
+  collections:
+    - vmware.ansible_for_nsxt
+      
+  roles:
+    - { role: nsxt_add_static_route }
+    - { role: nsxt_add_snat_rules }      
