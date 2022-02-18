@@ -1,0 +1,28 @@
+---
+- name: build ips list from clusterIPs.yaml
+  include_vars:
+    file: clusterIPs.yaml
+    name: ips
+
+- name: Create SNAT Rules
+  vmware.ansible_for_nsxt.nsxt_rest:
+    hostname: "{{ nsxt_fqdn }}"
+    username: "{{ nsxt_username }}"
+    password: "{{ nsxt_password }}"
+    validate_certs: "{{ nsxt_validate_certificates }}"
+    method: patch
+    path: "/policy/api/v1/infra/tier-1s/test_1/nat/USER/nat-rules/{{ item.name }}-{{ cluster_name }}"
+    content:
+      {
+        "action": "SNAT",
+        "display_name": "{{ item.name }}-{{ cluster_name }}",
+        "sequence_number": 100,
+        "source_network": "{{ item.source }}",
+        "translated_network": "{{ item.translated }}"
+      }
+  loop: "{{ ips.nodeList }}"
+
+  register: nsxt_snat_results
+
+- debug: var=nsxt_snat_results
+  when: debuglevel | int > 0            
