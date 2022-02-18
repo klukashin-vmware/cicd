@@ -1,0 +1,23 @@
+---
+resource_types:
+- name: ssh
+  type: docker-image
+  source:
+    repository: quay.io/henry40408/concourse-ssh-resource
+
+resources:
+- name: bastion-vm
+  type: ssh
+  source:
+    host: 10.0.2.165
+    user: vmware
+    password: R0gers!23
+jobs:
+- name: job
+  public: true
+  plan:
+  - put: bastion-vm
+    params:
+      interpreter: /bin/sh
+      script: |
+        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-config-nsxt.yaml && rm -rf cicd
