@@ -1,0 +1,37 @@
+---
+- name: read network name from input file
+  vars:
+    values_file: "{{ lookup('file','values.yaml') | from_yaml }}"
+  set_fact:
+    network_name: "{{ values_file.NetworkSettings.vipNetworkList[0].networkName }}"
+    cluster_name: "{{ values_file.AKOSettings.clusterName }}"
+
+- name: read cluster_vip
+  vars:
+    clusterIPs_file: "{{ lookup('file','clusterIPs.yaml') | from_yaml }}"
+  set_fact:
+    cluster_vip: "{{ clusterIPs_file.clusterVIP }}"    
+
+- debug: var=network_name
+- debug: var=cluster_name
+- debug: var=cluster_vip  
+
+- name: Modify Tier1 GW Add Static Route for tkg cluster VIP
+  vmware.ansible_for_nsxt.nsxt_policy_tier1:
+    hostname: "{{ nsxt_fqdn }}"
+    username: "{{ nsxt_username }}"
+    password: "{{ nsxt_password }}"
+    validate_certs: "{{ nsxt_validate_certificates }}"
+    display_name: "srv-test1" 
+    state: present
+    static_routes:
+      - state: present
+        display_name: "static-route-{{ cluster_name }}"
+        network: "{{ cluster_vip }}/32"
+        #network: '12.12.12.0/24'        
+        next_hops:
+          - scope: "/infra/segments/{{ network_name }}"
+  register: nsxt_results
+
+- debug: var=nsxt_results
+  when: debuglevel | int > 0            
