@@ -5,6 +5,21 @@ tca_fqdn: 10.0.2.166
 tca_username: administrator@vsphere.local
 tca_password: R0gers!23VMware1!
 
+netbox_validate_certificates: no
+netbox_fqdn: 10.0.2.165
+netbox_username: admin
+netbox_password: R0gers!23
+
+avi_validate_certificates: no
+avi_fqdn: 10.0.2.144
+avi_username: admin
+avi_password: R0gers!23VMware1!
+
+nsxt_validate_certificates: no
+nsxt_fqdn: 10.0.2.185
+nsxt_username: admin
+nsxt_password: R0gers!23VMware1!
+
 maxSessionTimeSeconds: 1800
 time_zone: America/Los_Angeles
 
