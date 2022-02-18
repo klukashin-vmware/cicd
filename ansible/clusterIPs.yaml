@@ -1,0 +1,27 @@
+clusterVIP: 10.249.235.195
+nodeList:  # list masters and workers of the cluster
+- name: sr-1
+  source: 10.195.33.20
+  translated: 192.168.48.4
+- name: sr-2
+  source: 10.195.33.33
+  translated: 192.168.48.4
+- name: sr-3
+  source: 10.195.33.34
+  translated: 192.168.48.4
+- name: sr-4
+  source: 10.195.33.35
+  translated: 192.168.48.4
+- name: sr-5
+  source: 10.195.33.61
+  translated: 192.168.48.4
+- name: sr-6
+  source: 10.195.33.62
+  translated: 192.168.48.4
+- name: sr-7
+  source: 10.195.33.63
+  translated: 192.168.48.4
+- name: sr-8
+  source: 10.195.33.64
+  translated: 192.168.48.4
+
