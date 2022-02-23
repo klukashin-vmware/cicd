@@ -1,0 +1,91 @@
+{
+    "nsFlavourId": "default",
+    "additionalParamsForNs": {
+        "entityPrefix": ""
+    },
+    "additionalParamsForVnf": [
+        {
+            "vnfProfileId": "openet-certmanager-vro1",
+            "additionalParams": {
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "cert-manager",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values.yaml": "{{ lookup('file','certmanager_values.base64') }}"
+                            }
+                        ],
+                        "vduName": "cert-manager"
+                    }
+                ],
+                "lcmInterfaces": {
+                    "instantiate_start": [
+{% raw -%}
+                        {
+                            "name": "masterIp",
+                            "type": "string",
+                            "value": "{{vim.k8sCluster.masterNode.ip}}"
+                        },
+                        {
+                            "name": "masterUsername",
+                            "type": "string",
+                            "value": "{{vim.k8sCluster.masterNode.username}}"
+                        },
+                        {
+                            "name": "masterPassword",
+                            "type": "password",
+                            "value": "e3t2aW0uazhzQ2x1c3Rlci5tYXN0ZXJOb2RlLnBhc3N3b3JkfX0="
+                        }
+                    ],
+                    "instantiate_end": [
+                        {
+                            "name": "USERNAME",
+                            "type": "string",
+                            "value": "{{vim.k8sCluster.masterNode.username}}"
+                        },
+                        {
+                            "name": "PASSWORD",
+                            "type": "password",
+                            "value": "e3t2aW0uazhzQ2x1c3Rlci5tYXN0ZXJOb2RlLnBhc3N3b3JkfX0="
+                        },
+                        {
+                            "name": "MASTERIP",
+                            "type": "string",
+                            "value": "{{vim.k8sCluster.masterNode.ip}}"
+                        }
+{%- endraw %}
+                    ]
+                }
+            }
+        },
+        {
+            "vnfProfileId": "openet-certmanagerca2",
+            "additionalParams": {
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "cert-manager",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "vduName": "certmanager-openet-ca"
+                    }
+                ]
+            }
+        }
+    ]
+}
