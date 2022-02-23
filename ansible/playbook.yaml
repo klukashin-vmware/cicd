@@ -7,7 +7,5 @@
      - name: "Directory content"
        shell: ls
        register: results
-       
-- debug: var=results
 
 
