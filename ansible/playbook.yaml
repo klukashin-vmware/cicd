@@ -6,8 +6,8 @@
   tasks:
      - name: "Directory content"
        shell: ls
-       register: value
+       register: results
+       
+- debug: var=results
 
-     - debug:
-          msg: "Directory content {{value}}"
 
