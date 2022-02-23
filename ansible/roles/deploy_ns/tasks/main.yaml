@@ -1,0 +1,52 @@
+---
+
+- name: Create NS isntance resource
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/telco/api/nslcm/v2/ns_instances"
+    method: POST
+    body: "{{ lookup('file','ns_resource.json') }}"
+    return_content: yes
+    status_code: [200, 201]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+      Version: v2
+  register: tca_ns_results
+
+- debug: var=tca_ns_results.json
+  when: debuglevel | int > 0
+
+- set_fact:
+    instance_id: "{{ tca_ns_results.json.id }}"
+
+- name: encode values.yaml
+  shell: echo {{ lookup('file','../ECS_Values/certmanager_values.yaml') | b64encode }} > certmanager_values.base64
+
+- name: generate template
+  template:
+    src: ns_instantiate.j2
+    dest: ns_instantiate.json
+
+- name: Instantiate NS
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/telco/api/nslcm/v2/ns_instances/{{ instance_id  }}/instantiate"
+    method: POST
+    body: "{{ lookup('file','ns_instantiate.json') }}"
+    return_content: yes
+    status_code: [200, 201, 202]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+      Version: v2
+  register: tca_ns_instantiate_results
+
+- debug: var=tca_ns_instantiate_results
+  when: debuglevel | int > 0
