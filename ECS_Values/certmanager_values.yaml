@@ -1,0 +1,21 @@
+global:
+  rbac:
+    create: true
+  podSecurityPolicy:
+    enabled: false
+    useAppArmor: true
+  leaderElection:
+    namespace: cert-manager
+
+installCRDs: true
+
+image:
+  repository: harbor.rogers.lab/openet-dependencies/jetstack/cert-manager-controller
+
+webhook:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/jetstack/cert-manager-webhook
+
+cainjector:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/jetstack/cert-manager-cainjector
