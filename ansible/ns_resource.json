@@ -1,0 +1,5 @@
+{
+  "nsdId": "nsd_fc8cd397-91d8-451b-a197-57ff07d4e493",
+  "nsName": "test-pipeline-ns",
+  "nsDescription": "test ns for ecs via pipeline"
+}
