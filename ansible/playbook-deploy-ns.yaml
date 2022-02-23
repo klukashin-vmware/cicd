@@ -1,0 +1,10 @@
+---
+- name: "Deploy ECS Network Service"
+  hosts: localhost
+  gather_facts: no
+
+  vars_files:
+    - ./default/main.yaml
+  roles:
+    - { role: tca_api  }
+    - { role: deploy_ns  }      
