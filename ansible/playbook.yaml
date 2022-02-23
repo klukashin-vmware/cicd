@@ -1,0 +1,13 @@
+---
+- name: "Running Current Working Directory"
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+     - name: "Current Working Directory"
+       shell: pwd
+       register: value
+
+     - debug:
+          msg: "The Current Working Directory {{value.stdout_lines}}"
+
