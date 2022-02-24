@@ -1,0 +1,49 @@
+global:
+  name: consul-consul
+  tls:
+    enabled: true
+    httpsOnly: false
+    caCert:
+      secretName: openet-ca-cert-secret
+      secretKey: tls.crt
+    caKey:
+      secretName: openet-ca-cert-secret
+      secretKey: tls.key
+  image: "harbor.rogers.lab/openet-dependencies/hashicorp/consul:1.9.2"
+  imageK8S: "harbor.rogers.lab/openet-dependencies/hashicorp/consul-k8s:0.23.0"
+
+dns:
+  enabled: false
+
+server:
+  replicas: 1
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "100m"
+      memory: "256Mi"
+      
+client:
+  resources:
+    requests:
+      cpu: "20m"
+      memory: "128Mi"
+    limits:
+      cpu: "40m"
+      memory: "256Mi"
+  tolerations: |
+    - key: "openet.com/elasticsearch"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+    - key: "openet.com/odf-general"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+    - key: "openet.com/voltdb"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"    
+
