@@ -24,7 +24,7 @@
     instance_id: "{{ tca_ns_results.json.id }}"
 
 - name: encode values.yaml
-  shell: echo {{ lookup('file','../ECS_Values/certmanager_values.yaml') | b64encode }} > certmanager_values.base64
+  shell: echo {{ lookup('file','../ECS_Values/values-cert-manager.yaml') | b64encode }} > values-cert-manager.base64
 
 - name: generate template
   template:
