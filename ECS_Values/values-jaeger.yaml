@@ -1,0 +1,32 @@
+jaeger:
+  nameOverride: "jaeger"
+  fullnameOverride: "jaeger"
+  agent:
+    resources: 
+      requests:
+        cpu: 20m
+        memory: 128Mi 
+    tolerations:
+    - key: "openet.com/elasticsearch"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+    image: harbor.rogers.lab/openet-dependencies/jaegertracing/jaeger-agent
+  collector:
+    resources: 
+      requests:
+        cpu: 200m
+        memory: 400Mi
+    image: harbor.rogers.lab/openet-dependencies/jaegertracing/jaeger-collector
+  query:
+    oAuthSidecar:
+      enabled: false
+    resources:
+      requests:
+         cpu: 200m
+         memory: 400Mi
+    service:
+      type: NodePort
+      nodePort: 32500
+    image: harbor.rogers.lab/openet-dependencies/jaegertracing/jaeger-query
+
