@@ -1,23 +1,35 @@
----
 resource_types:
-- name: ssh
+- name: ansible-playbook
   type: docker-image
   source:
-    repository: quay.io/henry40408/concourse-ssh-resource
+    repository: troykinsella/concourse-ansible-playbook-resource
+    tag: latest
 
 resources:
-- name: bastion-vm
-  type: ssh
+- name: ansible
+  type: ansible-playbook
   source:
-    host: 10.0.2.165
-    user: vmware
-    password: R0gers!23
+    debug: true
+    user: cloud_user
+    verbose: vvv
+
+- name: source-code
+  type: git
+  source:
+    uri: https://gitea.rogers.lab/klukashin/cicd
+    skip_ssl_verification: true    
+
 jobs:
-- name: job
-  public: true
-  plan:
-  - put: bastion-vm
-    params:
-      interpreter: /bin/sh
-      script: |
-        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-deploy-ns.yaml && rm -rf cicd
+  - name: ansible-concourse
+    plan:
+    - get: source-code # git resource
+    - put: ansible
+      params:
+        diff: true
+        become: true
+        become_user: root
+        inventory: localhost
+        playbook: ./ansible/playbook-deploy-ns.yaml
+        path: source-code
+
+
