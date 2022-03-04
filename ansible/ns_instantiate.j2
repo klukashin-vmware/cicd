@@ -66,7 +66,7 @@
                     ]
                 }
             }
-        },
+        },        
         {
             "vnfProfileId": "openet-certmanagerca2",
             "additionalParams": {
@@ -86,6 +86,410 @@
                     }
                 ]
             }
-        }
+        },
+        {
+            "vnfProfileId": "openet-consul-secret3",
+            "additionalParams": {
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "consul",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values.yaml": "{{ lookup('file','values-consul.base64') }}"
+                            }
+                        ],
+                        "vduName": "consul"
+                    }
+                ],
+                "lcmInterfaces": {
+                    "instantiate_start": [
+{% raw -%}
+                        {
+                            "name": "USERNAME",
+                            "type": "string",
+                            "value": "{{vim.k8sCluster.masterNode.username}}"
+                        },
+                        {
+                            "name": "PASSWORD",
+                            "type": "password",
+                            "value": "e3t2aW0uazhzQ2x1c3Rlci5tYXN0ZXJOb2RlLnBhc3N3b3JkfX0="
+                        },
+                        {
+                            "name": "MASTERIP",
+                            "type": "string",
+                            "value": "{{vim.k8sCluster.masterNode.ip}}"
+                        }
+{%- endraw %}
+                    ]
+                }
+            }
+        },        
+        {
+            "vnfProfileId": "openet-keycloak4",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "infrastructure",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-keycloak.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "keycloak"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-umseckcrd5",
+            "additionalParams": {
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "monitoring",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "vduName": "umseckcrd"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-jaeger6",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "monitoring",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-jaeger.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "jaeger"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-ads7",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "ads",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-ads.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "ads"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-udsf-volt8",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "ecs-chf-udsf",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-udsf-volt.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "udsfvolt"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-udsf9",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "ecs-chf-udsf",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-chf-udsf.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "udsf"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-udsf-volt10",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "ecs-slc-udsf",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-udsf-volt.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "udsfvolt"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-udsf11",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "ecs-slc-udsf",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-slc-udsf.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "udsf"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-provisioning-volt12",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "provisioning",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-provisioning-volt.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "provisioning-volt"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-provisionng13",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "provisioning",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-provisioning.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "provisioning"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-ecs14",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "ecs",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-ecs.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "ecs"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-ocgui15",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "oc-gui",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-oc-gui.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "ocgui"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-strimzi-kafka-operator-26116",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "cgf",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-strimzi-kafka-operator.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "strimzikafkaoperator"
+                    }
+                ]
+            }
+        },
+        {
+            "vnfProfileId": "openet-odf17",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "vmware_4A8D800C11D64A8FBB7C2C7BFB48922A"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "cgf",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-odf.base64') }}"
+                            }
+                        ],                        
+                        "vduName": "odfassembly"
+                    }
+                ]
+            }
+        },                                                                                                                                 
     ]
 }
