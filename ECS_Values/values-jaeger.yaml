@@ -1,6 +1,18 @@
 jaeger:
   nameOverride: "jaeger"
   fullnameOverride: "jaeger"
+  provisionDataStore:
+    cassandra: false
+    elasticsearch: false
+  storage:
+    type: elasticsearch
+    elasticsearch:
+      host: monitoring-elasticsearch-es-http.monitoring
+      scheme: https
+      user: elastic
+      usePassword: true
+      existingSecret: monitoring-elasticsearch-es-elastic-user
+      existingSecretKey: elastic
   agent:
     resources: 
       requests:
@@ -25,8 +37,5 @@ jaeger:
       requests:
          cpu: 200m
          memory: 400Mi
-    service:
-      type: NodePort
-      nodePort: 32500
     image: harbor.rogers.lab/openet-dependencies/jaegertracing/jaeger-query
 

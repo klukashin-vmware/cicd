@@ -4,7 +4,7 @@ global:
   tls:
     enabled: true
   ocGui:
-    externalWebOrigin: https://10.249.235.216
+    externalWebOrigin: https://10.249.235.11
   keycloak:
     externalWebOrigin: ""
 
@@ -18,7 +18,7 @@ gloo-kubernetes:
       gatewayProxy:
         service:
           type: LoadBalancer
-          loadBalancerIP: 10.249.235.216
+          loadBalancerIP: 10.249.235.11
           externalTrafficPolicy: Cluster
     gloo:
       deployment:
@@ -40,6 +40,7 @@ gloo-kubernetes:
 
 offercatalog-ui-api:
   enabled: true
+  fullnameOverride: "oc-gui-offercatalog-ui-api"
   service:
     resources:
       requests:
@@ -54,6 +55,7 @@ offercatalog-ui-api:
 
 offercatalog-gui-webapp:
   enabled: true
+  fullnameOverride: "oc-gui-offercatalog-gui-webapp"
   config:
     currencyLabel:
       main: dollar
@@ -72,6 +74,7 @@ offercatalog-gui-webapp:
 
 timeofday-ui-api:
   enabled: true
+  fullnameOverride: "oc-gui-timeofday-ui-api"
   service:
     resources:
       requests:
@@ -83,3 +86,4 @@ timeofday-ui-api:
   runtimeContainer:
     image:
       registry: harbor.rogers.lab/openet-dependencies
+
