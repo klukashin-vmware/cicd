@@ -45,5 +45,5 @@ client:
     - key: "openet.com/voltdb"
       operator: "Equal"
       value: "true"
-      effect: "NoSchedule"    
+      effect: "NoSchedule"
 

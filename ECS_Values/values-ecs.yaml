@@ -11,6 +11,12 @@ gloo-kubernetes:
       integrations:
         consul:
           httpAddress: https://consul-consul-server.consul.svc:8501
+    gatewayProxies:
+      gatewayProxy:
+        service:
+          type: LoadBalancer
+          loadBalancerIP: 10.249.235.2
+          externalTrafficPolicy: Cluster
     gloo:
       deployment:
         resources:
@@ -28,7 +34,7 @@ gloo-kubernetes:
   global:
     image:
       registry: harbor.rogers.lab/openet-dependencies/solo-io
-      
+
 app-filebeat-config:
   enabled: true
 
@@ -149,6 +155,9 @@ ocrt:
         memory: 2G
   autoscaling:
     maxReplicas: 1
+  tls:
+    certificate:
+      dnsNames: ["offer-catalog-sba-svc.ecs.svc"]
   initContainer:
     resources:
       requests:
@@ -236,8 +245,6 @@ slc:
 drb:
   enabled: true
   installRsync: "false"
-  autoscaling:
-    maxReplicas: 1
   context:
     service_discovery:
       service_discovery_endpoint: "https://$HOST_IP:8501"
@@ -346,8 +353,87 @@ notif:
 signaling-manager:
   enabled: true
   installRsync: "false"
+  context:
+    SmGyServerPlugin:
+      endpoints:
+        SmGyExternalLocalPeerEndpoint:
+          host: sigm.sm.openet.com
+          port: 21351
+          realm: sm.openet.com
+          virtualIp: null
+        SmGyExternalRemotePeerEndpoint:
+          host: .*
+          hostNameAddress: .*
+          port: 21052
+          realm: gy.openet.simu
+        SmGyInternalLocalPeerEndpoint:
+          host: sigm0.smgy.openet.com
+          port: 21352
+          realm: smgy.openet.com
+        SmGyInternalRemotePeerEndpoint:
+          host: .*
+          hostNameAddress: .*
+          port: 18053
+          realm: gy.openet.com
+    SmRoServerPlugin:
+      endpoints:
+        SmRoExternalLocalPeerEndpoint:
+          host: sigm.sm.openet.com
+          port: 21151
+          realm: sm.openet.com
+          virtualIp: null
+        SmRoExternalRemotePeerEndpoint:
+          host: .*
+          hostNameAddress: .*
+          port: 21052
+          realm: ro.openet.simu
+        SmRoInternalLocalPeerEndpoint:
+          host: sigm0.smro.openet.com
+          port: 21157
+          realm: smro.openet.com
+          virtualIp: null
+        SmRoInternalRemotePeerEndpoint:
+          host: .*
+          hostNameAddress: .*
+          port: 18043
+          realm: ro.openet.com
+    SmSyServerPlugin:
+      endpoints:
+        SmSyExternalLocalPeerEndpoint:
+          host: sigm.sm.openet.com
+          port: 21251
+          realm: sm.openet.com
+          virtualIp: null
+        SmSyExternalRemotePeerEndpoint:
+          host: .*
+          hostNameAddress: .*
+          port: 21052
+          realm: sy.openet.simu
+        SmSyInternalLocalPeerEndpoint:
+          host: sigm0.smsy.openet.com
+          port: 21252
+          realm: smsy.openet.com
+          virtualIp: null
+        SmSyInternalRemotePeerEndpoint:
+          host: .*
+          hostNameAddress: .*
+          port: 19062
+          realm: sy.openet.com
   helm:
     replicas: 1
+    service:
+      createIndividualPodService: true
+      cteStartUpTimeout: 300
+      externalIPs: []
+      externalTrafficPolicy: ""
+      lbEnable: true
+      lbType: LoadBalancer
+      name: sigm
+      nodePortEnable: false
+    podService:
+      - externalTrafficPolicy: Cluster
+        type: LocalBalancer
+        loadBalancerIP: 10.249.235.17
     resources:
       requests:
         cpu: 300m
@@ -468,7 +554,7 @@ ro:
             "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/roamingzonedetermination/",
             "destinationPath":"/opt/forge/ro/home/RoamingZoneDetermination"
       }
-    ]    
+    ]
 
 rsyncd:
   enabled: true
