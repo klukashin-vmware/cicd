@@ -6,7 +6,7 @@ global:
   tls:
     enabled: true
   serviceManagementGui:
-    externalWebOrigin: https://10.249.235.207
+    externalWebOrigin: https://10.249.235.9
   keycloak:
     externalWebOrigin: ""
 
@@ -20,7 +20,7 @@ gloo-kubernetes:
       gatewayProxy:
         service:
           type: LoadBalancer
-          loadBalancerIP: 10.249.235.207
+          loadBalancerIP: 10.249.235.9
           externalTrafficPolicy: Cluster
     gloo:
       deployment:
@@ -48,6 +48,7 @@ app-selector-webapp:
 
 bulk-provisioning-orchestrator:
   enabled: true
+  fullnameOverride: "provisioning-bulk-provisioning-orchestrator"
   persistentVolume:
     storageClassName: vsphere-sc
   service:
@@ -273,6 +274,7 @@ product-provisioning-gateway:
 
 profile-manager-gui-webapp:
   enabled: true
+  fullnameOverride: "provisioning-profile-manager-gui-webapp"
   service:
     resources:
       requests:
@@ -294,6 +296,7 @@ profile-manager-gui-webapp:
 
 profile-manager-ui-api:
   enabled: true
+  fullnameOverride: "provisioning-profile-manager-ui-api"
   persistentVolume:
     storageClassName: vsphere-sc
   service:

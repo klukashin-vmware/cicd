@@ -76,3 +76,4 @@ voltdb-pm:
       deployment:
         cluster:
           kfactor: 0
+
