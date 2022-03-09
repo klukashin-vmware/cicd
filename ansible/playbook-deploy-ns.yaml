@@ -7,4 +7,5 @@
     - ./default/main.yaml
   roles:
     - { role: tca_api  }
+    - { role: tca_ids_ns }      
     - { role: deploy_ns  }      
