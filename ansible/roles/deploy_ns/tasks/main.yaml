@@ -24,49 +24,49 @@
     instance_id: "{{ tca_ns_results.json.id }}"
 
 - name: encode values-cert-manager.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-cert-manager.yaml') | b64encode }} > values-cert-manager.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-cert-manager.yaml') | b64encode }} > values-cert-manager.base64
 
 - name: encode values-consul.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-consul.yaml') | b64encode }} > values-consul.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-consul.yaml') | b64encode }} > values-consul.base64
 
 - name: encode values-keycloak.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-keycloak.yaml') | b64encode }} > values-keycloak.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-keycloak.yaml') | b64encode }} > values-keycloak.base64
 
 - name: encode values-jaeger.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-jaeger.yaml') | b64encode }} > values-jaeger.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-jaeger.yaml') | b64encode }} > values-jaeger.base64
 
 - name: encode values-ads.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-ads.yaml') | b64encode }} > values-ads.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-ads.yaml') | b64encode }} > values-ads.base64
 
 - name: encode values-udsf-volt.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-udsf-volt.yaml') | b64encode }} > values-udsf-volt.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-udsf-volt.yaml') | b64encode }} > values-udsf-volt.base64
 
 - name: encode values-chf-udsf.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-chf-udsf.yaml') | b64encode }} > values-chf-udsf.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-chf-udsf.yaml') | b64encode }} > values-chf-udsf.base64
 
 - name: encode values-slc-udsf.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-slc-udsf.yaml') | b64encode }} > values-slc-udsf.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-slc-udsf.yaml') | b64encode }} > values-slc-udsf.base64
 
 - name: encode values-provisioning-volt.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-provisioning-volt.yaml') | b64encode }} > values-provisioning-volt.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-provisioning-volt.yaml') | b64encode }} > values-provisioning-volt.base64
 
 - name: encode values-provisioning.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-provisioning.yaml') | b64encode }} > values-provisioning.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-provisioning.yaml') | b64encode }} > values-provisioning.base64
 
 - name: encode values-ecs.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-ecs.yaml') | b64encode }} > values-ecs.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-ecs.yaml') | b64encode }} > values-ecs.base64
 
 - name: encode values-oc-gui.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-oc-gui.yaml') | b64encode }} > values-oc-gui.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-oc-gui.yaml') | b64encode }} > values-oc-gui.base64
 
 - name: encode values-strimzi-kafka-operator.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-strimzi-kafka-operator.yaml') | b64encode }} > values-strimzi-kafka-operator.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-strimzi-kafka-operator.yaml') | b64encode }} > values-strimzi-kafka-operator.base64
 
 - name: encode values-odf.yaml
-  shell: echo {{ lookup('file','../ECS_Values/values-odf.yaml') | b64encode }} > values-odf.base64
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-odf.yaml') | b64encode }} > values-odf.base64
 
   #- name: ecode values-monitoring.yaml
-  #shell: echo {{ lookup('file','../ECS_Values/values-monitoring.yaml') | b64encode }} > values-monitoring.base64
+  #shell: echo {{ lookup('file','../{{ values_folder }}/values-monitoring.yaml') | b64encode }} > values-monitoring.base64
 
 - name: generate template
   template:
