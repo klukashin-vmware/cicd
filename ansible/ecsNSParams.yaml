@@ -1,3 +1,5 @@
+nsInstanceName: test-ecs-ns
 cluster: test-kir-network-service
 valuesFolder: ECS_Values
+
 
