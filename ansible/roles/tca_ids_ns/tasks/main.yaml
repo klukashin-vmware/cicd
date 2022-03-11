@@ -3,6 +3,7 @@
   vars: 
     ns_param_file: "{{ lookup('file','ecsNSParams.yaml') | from_yaml }}"
   set_fact:
+    ns_instance_name: "{{ ns_param_file.nsInstanceName }}"      
     cluster_name: "{{ ns_param_file.cluster }}"
     values_folder: "{{ ns_param_file.valuesFolder }}"
 
