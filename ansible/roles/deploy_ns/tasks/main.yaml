@@ -1,4 +1,8 @@
 ---
+- name: generate template
+  template:
+    src: ns_resource.j2
+    dest: ns_resource.json
 
 - name: Create NS isntance resource
   uri:
