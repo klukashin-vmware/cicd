@@ -1,0 +1,177 @@
+strimzi-kafka:
+  enabled: true
+  kafka:
+    replicas: 1
+    storage:
+      type: persistent-claim
+      size: 50Gi
+      class: vsphere-sc 
+      deleteClaim: true
+    resources:
+      requests:
+        cpu: 1
+        memory: 32G
+    tlsSidecar:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    template:
+      pod:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: "odf.openet.com/broker"
+                    operator: "In"
+                    values:
+                    - "true"
+        tolerations:
+        - key: "openet.com/odf-general"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+    image: harbor.rogers.lab/openet-dependencies/strimzi/kafka:0.19.0-kafka-2.5.0
+  zookeeper:
+    replicas: 1
+    storage:
+      type: persistent-claim
+      size: 50Gi
+      class: vsphere-sc 
+      deleteClaim: true
+    resources:
+      requests:
+        cpu: 1
+        memory: 8G
+    template:
+      pod:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: "odf.openet.com/broker"
+                    operator: "In"
+                    values:
+                    - "true"
+        tolerations:
+        - key: "openet.com/odf-general"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+    image: harbor.rogers.lab/openet-dependencies/strimzi/kafka:0.19.0-kafka-2.5.0
+  entityOperator:
+    topicOperator:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      jvmOptions:
+        javaSystemProperties:
+        - name: log4j2.formatMsgNoLookups
+          value: "true"
+    userOperator:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      jvmOptions:
+        javaSystemProperties:
+        - name: log4j2.formatMsgNoLookups
+          value: "true"
+    tlsSidecar:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    template:
+      pod:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: "odf.openet.com/broker"
+                    operator: "In"
+                    values:
+                    - "true"
+        tolerations:
+        - key: "openet.com/odf-general"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+
+schema-registry-helm:
+  enabled: true
+  replicaCount: 1
+  kafka:
+    enabled: false
+  resources:
+    requests:
+      cpu: 1
+      memory: 2G
+  nodeSelector:
+    odf.openet.com/general: "true"
+  tolerations:
+   - key: "openet.com/odf-general"
+     operator: "Equal"
+     value: "true"
+     effect: "NoSchedule"
+  image: harbor.rogers.lab/openet-dependencies/confluentinc/cp-schema-registry
+
+strimzi-kafkaconnect:
+  enabled: true
+  name: odf-connect-cluster
+  replicas: 1
+  storage:
+    type: persistent-claim
+    size: 50Gi
+    class: vsphere-sc 
+    deleteClaim: false
+    mountPath: /mnt/shared
+  resources:
+    requests:
+      cpu: 1
+      memory: 6G
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: "odf.openet.com/broker"
+              operator: "In"
+              values:
+              - "true"
+  tolerations:
+    - key: "openet.com/odf-general"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+  image: harbor.rogers.lab/openet-software/odf/strimzi-connect-package:2.6.1
+
+strimzi-kafkatopics:
+  enabled: false
+
+strimzi-kafkaconnectors:
+  enabled: false
+
+odf-streamer:
+  enabled: false
+  resources:
+    requests:
+      cpu: 1
+      memory: 8G
+  nodeSelector:
+    odf.openet.com/general: "true"
+  tolerations:
+   - key: "openet.com/odf-general"
+     operator: "Equal"
+     value: "true"
+     effect: "NoSchedule"
+  image:
+    repository:  harbor.rogers.lab/openet-software/odf/odf-streamer
+
+strimzi-mirrormaker2:
+  enabled: false
+
