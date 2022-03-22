@@ -1,5 +1,5 @@
-nsInstanceName: ecs-ns-dev2
-cluster: rtrm-dev2
-valuesFolder: ECS_DEV2_Values
+nsInstanceName: ecs-ns-dev3
+cluster: rtrm-dev3
+valuesFolder: ECS_DEV3_Values
 
 
