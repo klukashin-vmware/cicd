@@ -1,5 +1,5 @@
-nsInstanceName: ecs-ns-qa1
-cluster: rtrm-qa1
-valuesFolder: ECS_QA1_Values
+nsInstanceName: ecs-ns-qa3
+cluster: rtrm-qa3
+valuesFolder: ECS_QA3_Values
 
 
