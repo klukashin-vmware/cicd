@@ -1,0 +1,79 @@
+global:
+  tracing:
+    configmap: null
+  housekeeping: null
+  ecsNamespace: ecs
+
+gloo-kubernetes:
+  enabled: false
+
+app-filebeat-config:
+  enabled: false
+
+createRegistrySecret:
+  enabled: false
+
+createVirtualService:
+  enabled: false
+
+custom-provisioning-gateway:
+  enabled: false
+
+job-scheduler:
+  enabled: false
+
+product-provisioning-gateway:
+  enabled: false
+
+provisioning:
+  enabled: false
+
+registration-agent:
+  enabled: false
+
+rsyncd:
+  enabled: false
+
+sba-profile-manager:
+  enabled: false
+
+sba-provisioning:
+  enabled: false
+
+voltdb-operator:
+  enabled: true
+  global:
+    rbac:
+      pspEnabled: false
+      create: true
+  operator:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 250Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+    hyperkubeImage:
+      registry: harbor.rogers.lab/openet-dependencies
+
+voltdb-pm:
+  enabled: true
+  global:
+    rbac:
+      pspEnabled: false
+      create: true
+  cluster:
+    clusterSpec:
+      persistentVolume:
+        size: 60Gi
+      resources:
+        requests:
+          cpu: 500m 
+          memory: 2.8G
+      image:
+        registry: harbor.rogers.lab/openet-software
+    config:
+      deployment:
+        cluster:
+          kfactor: 0
+
