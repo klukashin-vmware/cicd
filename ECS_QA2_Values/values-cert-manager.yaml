@@ -1,0 +1,38 @@
+global:
+  rbac:
+    create: true
+  podSecurityPolicy:
+    enabled: false
+    useAppArmor: true
+  leaderElection:
+    namespace: cert-manager
+
+installCRDs: true
+fullnameOverride: "cert-manager"
+
+image:
+  repository: harbor.rogers.lab/openet-dependencies/jetstack/cert-manager-controller
+
+resources:
+  requests:
+    cpu: 50m 
+    memory: 128Mi
+
+webhook:
+  fullnameOverride: "cert-manager-webhook"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/jetstack/cert-manager-webhook
+
+cainjector:
+  fullnameOverride: "cert-manager-cainjector"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/jetstack/cert-manager-cainjector
+

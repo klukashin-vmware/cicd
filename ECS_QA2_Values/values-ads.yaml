@@ -1,0 +1,227 @@
+global:
+  glooRbac:
+    create: true
+  tls:
+    enabled: false
+  glooMtls:
+    enabled: false
+
+tls:
+  createCertificates: false
+
+gloo-kubernetes:
+  gloo:
+    gatewayProxies:
+      gatewayProxy:
+        service:
+          type: LoadBalancer
+          loadBalancerIP: 10.249.235.40
+          externalTrafficPolicy: Cluster
+    gloo:
+      deployment:
+        resources:
+          requests:
+            cpu: 400m
+            memory: 600Mi
+          limits:
+            cpu: 800m
+            memory: 1G
+        image:
+          registry: harbor.rogers.lab/openet-dependencies/gloo-wrapper
+  postInstall:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies/alpine
+  global:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies/solo-io
+
+aha:
+  installRsync: "false"
+  fullnameOverride: "ads-aha"
+  autoscaling:
+    maxReplicas: 1
+  service:
+    resources:
+      requests:
+        cpu: 600m
+        memory: 600Mi
+  initContainer:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  filebeat:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+
+bootstrap:
+  enabled: true
+  ilm:
+    enabled: true
+  templates:
+    enabled: true
+  indices:
+    enabled: true
+  rollup:
+    enabled: true
+  data:
+    enabled: true
+  custom_user:
+    enabled: true
+    username: openet
+    password: Openet01
+    full_name: openet
+    email: ads@openet.com
+  image:
+    registry: harbor.rogers.lab/openet-dependencies
+
+bootstrapopc:
+  enabled: false
+
+custom-orchestration-gateway-aha:
+  enabled: false
+
+elastic-cloud-kubernetes:
+  managedServiceAccount: true
+  enableRbac: true
+
+elasticsearch:
+  image:
+    registry: harbor.rogers.lab/openet-dependencies
+  elasticsearch:
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 100Gi
+    spec:
+      http:
+        tls:
+          certificate:
+            secretName: null
+          selfSignedCertificate:
+            disabled: true
+    podTemplate:
+      spec:
+        serviceAccountName: ""
+        containers:
+          - name: elasticsearch
+            resources:
+              requests:
+                cpu: 2
+                memory: 10G
+            env:
+              - name: ES_JAVA_OPTS
+                value: "-Dlog4j2.formatMsgNoLookups=true"
+              - name: ELASTICSEARCH_USERNAME
+                value: elastic
+              - name: ELASTICSEARCH_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: ads-elasticsearch-es-elastic-user
+                    key: elastic
+              - name: CCS_CDR_HOST
+                value: sitea
+            lifecycle:
+              postStart:
+                exec:
+                  command:
+                  - bash
+                  - -c
+                  - |
+                    TEMPLATE_NAME="ccs-cdr-store-template"
+                    TEMPLATE_CHF_NAME="chf-cdr-store-template"
+                    TEMPLATE_ROLLUP_NAME="ccs-cdr-rollup-template"
+                    ILM_NAME="ccs-cdr-store-ilm"
+                    BOOTSTRAPBASE="%3C@@SITE_NAME@@.usage.fct.ccs-cdr-0.%7Bnow%2Fd%7D-000001%3E"
+                    BOOTSTRAPINDEX=$(echo $BOOTSTRAPBASE | sed -e "s/\@@SITE_NAME@@/$CCS_CDR_HOST/g")
+                    COPTS="-u $ELASTICSEARCH_USERNAME:$ELASTICSEARCH_PASSWORD"
+                    ES_URL="http://localhost:9200"
+                    while [[ "$(curl -sk -o /dev/null -w '%{http_code}\n' $COPTS $ES_URL)" != "200" ]]; do sleep 1; done
+                    curl $COPTS -k -XPUT "$ES_URL/_ilm/policy/$ILM_NAME" -H 'Content-Type: application/json' -d'{"policy":{"phases":{"hot":{"actions":{"rollover":{"max_age":"1d","max_size":"50gb"},"set_priority":{"priority":100}}},"delete":{"min_age":"30d","actions":{"delete":{}}}}}}'
+                    curl $COPTS -k -XPUT "$ES_URL/_ilm/policy/ads_housekeep" -H 'Content-Type: application/json' -d'{"policy":{"phases":{"hot":{"actions":{}},"delete":{"min_age":"14d","actions":{"delete":{}}}}}}'
+                    curl $COPTS -k -XPUT "$ES_URL/_template/$TEMPLATE_NAME" -H 'Content-Type: application/json' -d'{"index_patterns":["*ccs-cdr-*"],"settings":{"index":{"lifecycle":{"name":"ccs-cdr-store-ilm","rollover_alias":"ccs-cdr"},"number_of_shards":1,"number_of_replicas":2}},"aliases":{"ccscdr-current-cycle":{"filter":{"range":{"recordOpeningTime":{"gte":"now/M"}}}}},"mappings":{"_source":{"enabled":true},"_meta":{"usageSpecificationId":"detail"},"properties":{"timeMillis":{"type":"date","store":true,"format":"epoch_millis||strict_date_optional_time"},"status":{"type":"keyword","store":true,"meta":{"entity":"status"}},"bcdStartDay":{"type":"keyword","store":true,"meta":{"entity":"bcdStartDay"}},"timeZone":{"type":"keyword","store":true,"meta":{"entity":"timeZone"}},"recordType":{"type":"keyword","store":true,"meta":{"entity":"type"}},"eventId":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.eventId"}},"ratingIndicator":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.ratingIndicator"}},"offerId":{"type":"keyword","store":true,"meta":{"entity":"ratedProductUsage.offerId"}},"groupId":{"type":"keyword","store":true,"meta":{"entity":"relatedParty.group"}},"subscriptionId":{"type":"keyword","store":true,"meta":{"entity":"ratedProductUsage.productRef"}},"balanceId":{"type":"keyword","store":true,"meta":{"entity":"ratedProductUsage.balanceId"}},"offerEntitlementName":{"type":"keyword","store":true,"meta":{"entity":"ratedProductUsage.offerEntitlementName"}},"msisdn":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.msisdn"}},"imsi":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.imsi"}},"subscriberId":{"type":"keyword","store":true,"meta":{"entity":"relatedParty.subscriber"}},"subscriberType":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.subscriberType"}},"chargeType":{"type":"keyword","store":true,"meta":{"entity":"ratedProductUsage.isBilled"}},"recordOpeningTime":{"type":"date","store":true,"format":"epoch_second||strict_date_optional_time","meta":{"entity":"usageCharacteristic.recordOpeningTime"}},"recordClosingTime":{"type":"date","store":true,"format":"epoch_second||strict_date_optional_time","meta":{"entity":"usageCharacteristic.recordClosingTime"}},"rerateAuditTime":{"type":"date","store":true,"format":"epoch_second||strict_date_optional_time","meta":{"entity":"usageCharacteristic.rerateAuditTime"}},"sgsnIpAddress":{"type":"ip","store":true,"meta":{"entity":"usageCharacteristic.sgsnIpAddress"}},"mccmnc":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.mccmnc"}},"ggsnAddress":{"type":"ip","store":true,"meta":{"entity":"usageCharacteristic.ggsnAddress"}},"ggsnChargingId":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.ggsnChargingId"}},"apn":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.apn"}},"ratingGroup":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.ratingGroup"}},"serviceId":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.serviceId"}},"ratType":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.ratType"}},"userLocationInformation":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.userLocationInformation"}},"msTimeZone":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.msTimeZone"}},"isRoaming":{"type":"boolean","store":true,"meta":{"entity":"usageCharacteristic.isRoaming"}},"zone":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.zone"}},"ccTime":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.ccTime"}},"ccTotalOctets":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.ccTotalOctets"}},"ccInputOctets":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.ccInputOctets"}},"ccOutputOctets":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.ccOutputOctets"}},"ratedCashValuePreTax":{"type":"scaled_float","scaling_factor":"1000000","store":true,"meta":{"entity":"ratedProductUsage.taxExcludedRatingAmount"}},"ratedCashValuePostTax":{"type":"scaled_float","scaling_factor":"1000000","store":true,"meta":{"entity":"ratedProductUsage.taxIncludedRatingAmount"}},"userEquipmentInfoType":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.userEquipmentInfoType"}},"balanceImpactName":{"type":"keyword","store":true,"meta":{"entity":"ratedProductUsage.balanceImpactName"}},"imei":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.userEquipmentInfoValue"}},"ccSpecificServiceUnits":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.ccServiceSpecificUnits"}},"offerName":{"type":"keyword","store":true,"meta":{"entity":"ratedProductUsage.offerName"}},"glid":{"type":"keyword","store":true,"meta":{"entity":"ratedProductUsage.glid"}},"carrierId":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.carrierId"}},"roamingCountry":{"type":"keyword","store":true,"meta":{"entity":"usageCharacteristic.roamingCountry"}},"accumulatedInBundle":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.accumulatedInBundle"}},"accumulatedOutOfBundle":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.accumulatedOutOfBundle"}},"accumulatedNotApplied":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.accumulatedNotApplied"}},"accumulatedUsageBalance":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.accumulatedUsageBalance"}},"accumulatedChargeBalance":{"type":"long","store":true,"meta":{"entity":"usageCharacteristic.accumulatedChargeBalance"}},"ratedCashValue":{"type":"scaled_float","scaling_factor":"1000000","store":true,"meta":{"entity":"ratedProductUsage.ratedCashValue"}},"counterFinalValue":{"type":"long","store":true},"otherPartyAddress":{"type":"keyword","store":true},"requestNumber":{"type":"long","store":true},"requestType":{"type":"keyword","store":true},"resultCode":{"type":"keyword","store":true},"sessionId":{"type":"keyword","store":true},"terminationCause":{"type":"keyword","store":true},"agg":{"properties":{"recordOpeningTime":{"type":"alias","path":"recordOpeningTime"},"status":{"type":"alias","path":"status"},"recordType":{"type":"alias","path":"recordType"},"offerId":{"type":"alias","path":"offerId"},"offerEntitlementName":{"type":"alias","path":"offerEntitlementName"},"chargeType":{"type":"alias","path":"chargeType"},"ratingGroup":{"type":"alias","path":"ratingGroup"},"serviceId":{"type":"alias","path":"serviceId"},"offerName":{"type":"alias","path":"offerName"},"subscriberId":{"type":"alias","path":"subscriberId"},"groupId":{"type":"alias","path":"groupId"},"ccTotalOctets":{"type":"alias","path":"ccTotalOctets"},"ccInputOctets":{"type":"alias","path":"ccInputOctets"},"ccOutputOctets":{"type":"alias","path":"ccOutputOctets"},"ratedCashValuePreTax":{"type":"alias","path":"ratedCashValuePreTax"},"ratedCashValuePostTax":{"type":"alias","path":"ratedCashValuePostTax"},"ccSpecificServiceUnits":{"type":"alias","path":"ccSpecificServiceUnits"},"accumulatedInBundle":{"type":"alias","path":"accumulatedInBundle"},"accumulatedOutOfBundle":{"type":"alias","path":"accumulatedOutOfBundle"},"accumulatedNotApplied":{"type":"alias","path":"accumulatedNotApplied"},"ratedCashValue":{"type":"alias","path":"ratedCashValue"},"requestNumber":{"type":"long","store":"true"}}}}}}'
+                    curl $COPTS -k -XPUT "$ES_URL/_template/$TEMPLATE_CHF_NAME" -H 'Content-Type: application/json' -d'{"index_patterns":["*chf-cdr*"],"settings":{"index":{"lifecycle":{"name":"ads_housekeep"}}},"aliases":{"chf-cdr":{}},"mappings":{"_source":{"enabled":true},"_meta":{},"properties":{"message":{"type":"nested"},"timeMillis":{"format":"epoch_millis","type":"date","store":"true"}}}}'
+                    curl $COPTS -k -XPUT "$ES_URL/_template/$TEMPLATE_RERATE_NAME" -H 'Content-Type: application/json' -d'{"index_patterns":["*rerate-edr*"],"settings":{"index":{"number_of_shards":1,"number_of_replicas":2}},"mappings":{"_source":{"enabled":true},"_meta":{},"properties":{"timeMillis":{"type":"date","store":true,"format":"epoch_millis||strict_date_optional_time"},"message":{"properties":{"dateRange":{"type":"nested"},"adjustmentType":{"type":"keyword","store":true},"billCycle":{"type":"integer","store":true},"imsi":{"type":"keyword","store":true},"msisdn":{"type":"keyword","store":true},"subscriberId":{"type":"keyword","store":true},"rerateTime":{"type":"date","store":true,"format":"epoch_second||strict_date_optional_time"},"resources":{"type":"nested"},"resultCode":{"type":"long","store":true},"resultMessage":{"type":"keyword","store":true}}}}}}'
+                    curl $COPTS -k -XPUT "$ES_URL/_template/$TEMPLATE_ROLLUP_NAME" -H 'Content-Type: application/json' -d'{"index_patterns":["ccscdr-rollup"],"settings":{"number_of_shards":1,"number_of_replicas":1},"mappings":{"_meta":{"usageSpecificationId":"summary"},"properties":{"recordOpeningTime":{"properties":{"date_histogram":{"properties":{"_count":{"type":"long"},"interval":{"type":"keyword"},"time_zone":{"type":"keyword"},"timestamp":{"type":"date"}}}}},"status":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"recordType":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"offerId":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"offerEntitlementName":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"chargeType":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"ratingGroup":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"serviceId":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"offerName":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"subscriberId":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"groupId":{"properties":{"terms":{"properties":{"_count":{"type":"long"},"value":{"type":"keyword"}}}}},"ccTotalOctets":{"properties":{"sum":{"properties":{"value":{"type":"long"}}}}},"ccInputOctets":{"properties":{"sum":{"properties":{"value":{"type":"long"}}}}},"ccOutputOctets":{"properties":{"sum":{"properties":{"value":{"type":"long"}}}}},"ratedCashValuePreTax":{"properties":{"sum":{"properties":{"value":{"type":"scaled_float","scaling_factor":"1000000"}}}}},"ratedCashValuePostTax":{"properties":{"sum":{"properties":{"value":{"type":"scaled_float","scaling_factor":"1000000"}}}}},"ccSpecificServiceUnits":{"properties":{"sum":{"properties":{"value":{"type":"long"}}}}},"accumulatedInBundle":{"properties":{"sum":{"properties":{"value":{"type":"long"}}}}},"accumulatedOutOfBundle":{"properties":{"sum":{"properties":{"value":{"type":"long"}}}}},"accumulatedNotApplied":{"properties":{"sum":{"properties":{"value":{"type":"long"}}}}},"ratedCashValue":{"properties":{"sum":{"properties":{"value":{"type":"scaled_float","scaling_factor":"1000000"}}}}},"agg":{"properties":{"recordOpeningTime":{"type":"alias","path":"recordOpeningTime.date_histogram.timestamp"},"status":{"type":"alias","path":"status.terms.value"},"recordType":{"type":"alias","path":"recordType.terms.value"},"offerId":{"type":"alias","path":"offerId.terms.value"},"offerEntitlementName":{"type":"alias","path":"offerEntitlementName.terms.value"},"chargeType":{"type":"alias","path":"chargeType.terms.value"},"ratingGroup":{"type":"alias","path":"ratingGroup.terms.value"},"serviceId":{"type":"alias","path":"serviceId.terms.value"},"offerName":{"type":"alias","path":"offerName.terms.value"},"subscriberId":{"type":"alias","path":"subscriberId.terms.value"},"groupId":{"type":"alias","path":"groupId.terms.value"},"ccTotalOctets":{"type":"alias","path":"ccTotalOctets.sum.value"},"ccInputOctets":{"type":"alias","path":"ccInputOctets.sum.value"},"ccOutputOctets":{"type":"alias","path":"ccOutputOctets.sum.value"},"ratedCashValuePreTax":{"type":"alias","path":"ratedCashValuePreTax.sum.value"},"ratedCashValuePostTax":{"type":"alias","path":"ratedCashValuePostTax.sum.value"},"ccSpecificServiceUnits":{"type":"alias","path":"ccSpecificServiceUnits.sum.value"},"accumulatedInBundle":{"type":"alias","path":"accumulatedInBundle.sum.value"},"accumulatedOutOfBundle":{"type":"alias","path":"accumulatedOutOfBundle.sum.value"},"accumulatedNotApplied":{"type":"alias","path":"accumulatedNotApplied.sum.value"},"ratedCashValue":{"type":"alias","path":"ratedCashValue.sum.value"}}}}}}'
+                    curl $COPTS -k -XPUT "$ES_URL/$BOOTSTRAPINDEX" -H 'Content-Type: application/json' -d'{"aliases": {"ccs-cdr": {"is_write_index": true}}}'
+                    curl $COPTS -k -XPUT "$ES_URL/ccscdr-usage-specifications" -H 'Content-Type: application/json' -d'{"mappings":{"_source":{"enabled":true},"properties":{"name":{"type":"keyword"},"description":{"type":"text"},"validFor":{"type":"object","properties":{"startDateTime":{"type":"date","store":true,"format":"epoch_second||strict_date_optional_time"},"endDateTime":{"type":"date","store":true,"format":"epoch_second||strict_date_optional_time"}}},"usageSpecCharacteristic":{"type":"object","properties":{"name":{"type":"keyword"},"description":{"type":"text"},"configurable":{"type":"boolean"},"usageSpecCharacteristicValue":{"type":"object","properties":{"valueType":{"type":"keyword"},"default":{"type":"boolean"},"value":{"type":"text"},"valueFrom":{"type":"keyword"},"valueTo":{"type":"keyword"}}}}}}}}'
+                    curl $COPTS -k -XPUT "$ES_URL/_rollup/job/ccs-cdr-summary" -H 'Content-Type: application/json' -d'{"index_pattern":"*ccs-cdr-*","rollup_index":"ccscdr-rollup","cron":"0 59 23 30 * ?","page_size":1000,"groups":{"date_histogram":{"field":"recordOpeningTime","fixed_interval":"30d"},"terms":{"fields":["status","recordType","offerId","offerEntitlementName","chargeType","ratingGroup","serviceId","offerName","subscriberId","groupId"]}},"metrics":[{"field":"ccTotalOctets","metrics":["sum"]},{"field":"ccInputOctets","metrics":["sum"]},{"field":"ccOutputOctets","metrics":["sum"]},{"field":"ratedCashValuePreTax","metrics":["sum"]},{"field":"ratedCashValuePostTax","metrics":["sum"]},{"field":"ccSpecificServiceUnits","metrics":["sum"]},{"field":"accumulatedInBundle","metrics":["sum"]},{"field":"accumulatedOutOfBundle","metrics":["sum"]},{"field":"accumulatedNotApplied","metrics":["sum"]},{"field":"ratedCashValue","metrics":["sum"]}]}'
+                    curl $COPTS -k -XPOST "$ES_URL/ccscdr-usage-specifications/_doc/detail" -H 'Content-Type: application/json' -d'{"name": "CDR Specification","description": "CCS CDR record description","validFor": {"startDateTime": "2020-06-29","endDateTime": "2030-06-30"},"usageSpecCharacteristic": [{"name": "msisdn","description": "Subscriber@@QUOTE@@s MSISDN from CCR message (CCR.SubscriptionId.E164)","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "imsi","description": "Subscriber@@QUOTE@@s IMSI from CCR message if present (CCR.SubscriptionId.IMSI)","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "subscriberType","description": "Subscriber type from the SPR (\"postpaid\" or \"prepaid\")","usageSpecCharacteristicValue": [{"valueType": "string","default": true,"value": "postpaid"},{"valueType": "string","value": "prepaid"}]},{"name": "recordOpeningTime","description": "Time when record was opened (either Event-Timestamp of CCRi, or for mid-session records time of previous record closure +1second) converted to UTC TIME; for Voice: EventTime as sent in CCRu/t minus duration. Where records are split by OCS e.g. due to use of different balances, the Record-Opening-Times of subsequent CDRs are taken from previous record-closure-time plus one second. Format is unix epoch time","usageSpecCharacteristicValue": [{"valueType": "date"}]},{"name": "recordClosingTime","description": "Time when record was closed (either Event-Timestamp of CCR, or for other closure reasons). Format it unix epoch time.","usageSpecCharacteristicValue": [{"valueType": "date"}]},{"name": "rerateAuditTime","description": "Time when audit record was rerated. Format is unix epoch time","usageSpecCharacteristicValue": [{"valueType": "date"}]},{"name": "sgsnIpAddress","description": "SGSN IP address from CCR message (CCR.ServiceInformation.PS-Information.SGSN-Address)","usageSpecCharacteristicValue": [{"valueType": "ip"}]},{"name": "mccmnc","description": "SGSN MCCMNC from CCR message. (CCR.ServiceInformation.PS-Information.3GPP-SGSN-MCCMNC).","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "ggsnAddress","description": "GGSN address from CCR message (CCR.ServiceInformation.PS-Information.3GPP-GGSNAddress). Empty if not sent","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "ggsnChargingId","description": "GGSN charging ID from CCR message (CCR.SericeInformation.PS-Information.3GPP-Charging-Id)","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "apn","description": "APN from CCR message (CCR.ServiceInformation.PSInformation.Called-Station-Id)","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "ratingGroup","description": "Rating group from CCR message (CCR.MSCC.Rating-Group)","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "serviceId","description": "Service ID from CCR message","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "ratType","description": "RAT type from CCR-I message (CCR.ServiceInformation.PSInformation.3GPP-RAT-Type","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "userLocationInformation","description": "User location info from CCR message (CCR.ServiceInformation.PS-Information.3GPP-UserLocation-Info). Empty if not provided in Gy request","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "msTimeZone","description": "MS timezone from CCR-I message (CCR.ServiceInformation.PS-Information.3GPP-MS-TimezoneInfo). Empty if not provided in Gy request. Note that the msTimezone field only provides an offset in number of 15minutes intervals. This is not a string defining an actual timezone","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "isRoaming","description": "Derived from MCCMNC and zone definition, and for Ro it uses the VLRID (\"Y\" or \"N\")","usageSpecCharacteristicValue": [{"valueType": "boolean"}]},{"name": "zone","description": "Subscriber@@QUOTE@@s current zone (this field will be the actual configured zone string as per OCS zone configuration)","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "ccTime","description": "Sum of the used time from CCR messages (CCR.UsedService-Unit.CC-Time) since last CDR","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "ccTotalOctets","description": "Octets - Sum of Total octets regardless of the direction from CCR messages (CCR.Used-Service-Unit.CC-Total-Octets) since last CDR","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "ccInputOctets","description": "Sum of used octets that have been received from the end user (CCR.Used-Service-Unit.CC-Input-Octets) since last CDR","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "ccOutputOctets","description": "Sum of used octets that have been sent to the end user (CCR.Used-Service-Unit.CC-Output-Octets) since last CDR","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "userEquipmentInfoType","description": "User equipment info type from CCR message (CCR.UserEquipment-Info-Type), if provided else empty","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "userEquipmentInfoValue","description": "User equipment info value from CCR message (CCR.UserEquipment-Info-Value), if provided else empty","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "balanceImpactName","description": "Balance_Impact_Name of the balanceImpact associated with the used usage. Empty if no balanceImpact exists for the entitlement","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "ccServiceSpecificUnits","description": "Specifies the service specific units consumed (default value 1)","usageSpecCharacteristicValue": [{"valueType": "number","default": true,"value": "1"}]},{"name": "vlrid","description": "VLR ID on the Ro CCR","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "glid","description": "General Ledger ID -> Direct mapping to tar_class_code","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "carrierId","description": "CarrierId of the subscriber, this maps back to the MVNO the subscriber belongs to.","usageSpecCharacteristicValue": [{"valueType": ""}]},{"name": "roamingCountry","description": "RoamingCountry is the country the device is roaming in.","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "accumulatedInBundle","description": "Accumulated usage in bundle indicating overall usage consumed from allowance per rating group / per service identifier. Does not reset upon allowance change.","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "accumulatedOutOfBundle","description": "Accumulated usage out of bundle (consumed units) indicating overall usage consumed that was rated against monetary units - per rating group / per service identifier. Does not reset upon balance change.","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "accumulatedNotApplied","description": "Accumulated usage not applied per rating group / per service identifier.","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "accumulatedUsageBalance","description": "Accumulated usage per balance/ rating group/ service identifier. For cash consumption field indicates overall usage of units (kb, SMS, seconds etc.) cash balance charge was rated against.","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "accumulatedChargeBalance","description": "Accumulated charge per balance / rating group / service identifier indicating aggregated charge of monetary units consumed. Only present for monetary balances.","usageSpecCharacteristicValue": [{"valueType": "number"}]}]}'
+                    curl $COPTS -k -XPOST "$ES_URL/ccscdr-usage-specifications/_doc/summary" -H 'Content-Type: application/json' -d'{"name": "CDR Specification","description": "Summary CCS CDR record description","validFor": {"startDateTime": "2020-07-23","endDateTime": "2030-07-24"},"usageSpecCharacteristic": [{"name": "recordOpeningTime","description": "Time when record was opened (either Event-Timestamp of CCRi, or for mid-session records time of previous record closure +1second) converted to UTC TIME; for Voice: EventTime as sent in CCRu/t minus duration. Where records are split by OCS e.g. due to use of different balances, the Record-Opening-Times of subsequent CDRs are taken from previous record-closure-time plus one second. Format is unix epoch time","usageSpecCharacteristicValue": [{"valueType": "date"}]},{"name": "ratingGroup","description": "Rating group from CCR message (CCR.MSCC.Rating-Group)","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "serviceId","description": "Service ID from CCR message","usageSpecCharacteristicValue": [{"valueType": "string"}]},{"name": "ccTotalOctets","description": "Octets - Sum of Total octets regardless of the direction from CCR messages (CCR.Used-Service-Unit.CC-Total-Octets) since last CDR","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "ccInputOctets","description": "Sum of used octets that have been received from the end user (CCR.Used-Service-Unit.CC-Input-Octets) since last CDR","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "ccOutputOctets","description": "Sum of used octets that have been sent to the end user (CCR.Used-Service-Unit.CC-Output-Octets) since last CDR","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "ccServiceSpecificUnits","description": "Specifies the service specific units consumed (default value 1)","usageSpecCharacteristicValue": [{"valueType": "number","default": true,"value": "1"}]},{"name": "accumulatedInBundle","description": "Accumulated usage in bundle indicating overall usage consumed from allowance per rating group / per service identifier. Does not reset upon allowance change.","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "accumulatedOutOfBundle","description": "Accumulated usage out of bundle (consumed units) indicating overall usage consumed that was rated against monetary units - per rating group / per service identifier. Does not reset upon balance change.","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "accumulatedNotApplied","description": "Accumulated usage not applied per rating group / per service identifier.","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "accumulatedUsageBalance","description": "Accumulated usage per balance/ rating group/ service identifier. For cash consumption field indicates overall usage of units (kb, SMS, seconds etc.) cash balance charge was rated against.","usageSpecCharacteristicValue": [{"valueType": "number"}]},{"name": "accumulatedChargeBalance","description": "Accumulated charge per balance / rating group / service identifier indicating aggregated charge of monetary units consumed. Only present for monetary balances.","usageSpecCharacteristicValue": [{"valueType": "number"}]}]}'
+                    curl $COPTS -k -XPOST "$ES_URL/_rollup/job/ccs-cdr-summary/_start" -H 'Content-Type: application/json' -d'{}'
+
+kibana:
+  kibana:
+    spec:
+      http:
+        tls:
+          certificate:
+            secretName: null
+          selfSignedCertificate:
+            disabled: true
+    podTemplate:
+      spec:
+        serviceAccountName: ""
+        containers:
+        - name: kibana
+          resources:
+            requests:
+              cpu: 200m
+              memory: 2.5G
+  image:
+    registry: harbor.rogers.lab/openet-dependencies
+
+rsyncd:
+  enabled: false
+
+rdg-chf:
+  enabled: false
+
+rdg-ccs:
+  enabled: false
+
+rdg-ro-cdr:
+  enabled: false
+
+rdg-prov:
+  enabled: false
+
+rdg-notif:
+  enabled: false
+
+rdg-slc:
+  enabled: false
+
+rdg-sba-provisioning:
+  enabled: false
+
+rdg-slm:
+  enabled: false
+
+rdg-sm-request:
+  enabled: false
+
+rdg-sm-response:
+  enabled: false
+
+record-distribution-gateway:
+  enabled: false
+
+registration-agent:
+  enabled: false
+
+sftp-server:
+  enabled: false
+
