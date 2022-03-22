@@ -1,0 +1,716 @@
+global:
+  glooRbac:
+    create: true
+  tls:
+    enabled: false
+  glooMtls:
+    enabled: false
+  nfInstanceId: e9abdb2a-3df1-4f3b-a5f0-80c1c8ea9782
+    
+gloo-kubernetes:
+  gloo:
+    gatewayProxies:
+      gatewayProxy:
+        service:
+          type: NodePort
+          httpNodePort: 31040
+          httpsNodePort: 31041
+    gloo:
+      deployment:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 250Mi
+          limits:
+            cpu: 200m
+            memory: 500Mi
+        image:
+          registry: harbor.rogers.lab/openet-dependencies/gloo-wrapper
+  postInstall:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies/alpine
+  global:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies/solo-io
+
+app-filebeat-config:
+  enabled: true
+
+chf:
+  enabled: true
+  installRsync: "true"
+  udsf:
+    namespace: ecs-chf-udsf
+  service:
+    resources:
+      requests:
+        cpu: 300m 
+        memory: 600Mi 
+      limits:
+        cpu: 2
+        memory: 2G
+  autoscaling:
+    maxReplicas: 1
+  jvm:
+    options:
+      log4j2-opts:
+        - "-Dlog4j2.formatMsgNoLookups=true"
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+      repository: chf/chf-server
+      tag: 7.0.2-log4j-upgrade-B2
+  chargingGatewayClient:
+    enabled: true
+    tlsEnabled: false
+    bootstrapServers: "odf-cluster-kafka-bootstrap.cgf.svc:9092"
+    schemaRegistryUrl: "http://odf-cluster-schema-registry.cgf.svc:8081"
+    runtimeContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256Mi
+      image:
+        registry: harbor.rogers.lab/openet-dependencies
+    initContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256Mi
+      image:
+        registry: harbor.rogers.lab/openet-software 
+        repository: sba-microservice/charging-gateway-client-server
+        tag: 1.0.0-log4j-upgrade-B1
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+       registry: harbor.rogers.lab/openet-dependencies
+  customRsyncConfigJson: | 
+    [
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/accessprivilege/AccessPrivilege.xml",
+            "destinationPath":"/opt/deploy/SBA/config/product-config/AccessPrivilege.xml"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/pcs/",
+            "destinationPath":"/opt/deploy/SBA/config/product-config/pcs"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/offercatalog/",
+            "destinationPath":"/opt/deploy/SBA/config/product-config/offercatalog"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/slm/chf/",
+            "destinationPath":"/opt/deploy/SBA/config/product-config/slm"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/roamingzonedetermination/",
+            "destinationPath":"/opt/deploy/SBA/config/product-config/rzd"
+      }
+    ]
+
+ocrt:
+  enabled: true
+  installRsync: "true"
+  service:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 256Mi
+      limits:
+        cpu: 2 
+        memory: 2G
+  autoscaling:
+    maxReplicas: 1
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    image:
+       registry: harbor.rogers.lab/openet-dependencies
+  customRsyncConfigJson: | 
+    [
+        {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/offercatalog/",
+            "destinationPath":"/opt/deploy/SBA/config/product-config/offercatalog/config/"
+        }
+    ]
+
+registration-agent:
+  enabled: false
+  installRsync: "false"
+
+slc:
+  enabled: true
+  installRsync: "false"
+  udsf:
+    namespace: ecs-slc-udsf
+  service:
+    resources:
+      requests:
+        cpu: 300m
+        memory: 600Mi
+      limits:
+        cpu: 500m
+        memory: 1.5G
+  jvm:
+    options:
+      log4j2-opts:
+        - "-Dlog4j2.formatMsgNoLookups=true"
+  initContainer:
+    image:
+      registry: harbor.rogers.lab/openet-software 
+      repository: sba-microservice/slc-server
+      tag: 5.0.3-log4j-upgrade-B1
+  chargingGatewayClient:
+    enabled: true
+    tlsEnabled: false
+    bootstrapServers: "odf-cluster-kafka-bootstrap.cgf.svc.cluster.local:9092"
+    initContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software 
+        repository: sba-microservice/charging-gateway-client-server
+        tag: 1.0.0-log4j-upgrade-B1
+    runtimeContainer:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+      image:
+        registry: harbor.rogers.lab/openet-dependencies        
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+       registry: harbor.rogers.lab/openet-dependencies
+
+drb:
+  enabled: true
+  installRsync: "false"
+  context:
+    remote_peer_endpoint:
+      - host_name: signaling-manager
+        initiate_connection: "True"
+        origin_host: sigm0.smgy.openet.com
+        origin_realm: smgy.openet.com
+        port: 21352
+        remotePeerSecurity: null
+        tlsAuthenticate: "false"
+        use_regex: "False"
+      - host_name: signaling-manager
+        initiate_connection: "False"
+        origin_host: sigm1.smgy.openet.com
+        origin_realm: smgy.openet.com
+        port: 21352
+        remotePeerSecurity: null
+        tlsAuthenticate: "false"
+        use_regex: "False"
+  helm:
+    resources:
+      requests:
+        cpu: 300m
+        memory: 1.5G
+      limits:
+        cpu: 2 
+        memory: 4G
+    initContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256M
+      image:
+        registry: harbor.rogers.lab/openet-software
+    runtimeContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+       registry: harbor.rogers.lab/openet-dependencies
+
+drb_sy:
+  enabled: true
+  autoscaling:
+    maxReplicas: 1
+  context:
+    remote_peer_endpoint:
+      - origin_host: sigm0.smsy.openet.com
+        origin_realm: smsy.openet.com
+        host_name: signaling-manager
+        port: 21252
+        initiate_connection: "true"
+        use_regex: "false"
+        remote_peer_security: "No Inband Security"
+        tls_authenticate: "false"
+      - origin_host: sigm1.smsy.openet.com
+        origin_realm: smsy.openet.com
+        host_name: signaling-manager
+        port: 21252
+        initiate_connection: "true"
+        use_regex: "false"
+        remote_peer_security: "No Inband Security"
+        tls_authenticate: "false"
+  helm:
+    resources:
+      requests:
+        cpu: 300m
+        memory: 1.5G
+      limits:
+        cpu: 2 
+        memory: 4G
+    initContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256M
+      image:
+        registry: harbor.rogers.lab/openet-software
+    runtimeContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+       registry: harbor.rogers.lab/openet-dependencies
+
+gui:
+  enabled: true
+  helm:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 250Mi 
+      limits:
+        cpu: 2 
+        memory: 2G 
+    initContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256Mi
+      image:
+        registry: harbor.rogers.lab/openet-software
+    runtimeContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software
+
+notif:
+  enabled: false
+  installRsync: "false"
+
+signaling-manager:
+  enabled: true
+  installRsync: "false"
+  helm:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 300m
+        memory: 1.5G
+      limits:
+        cpu: 2
+        memory: 4G 
+    initContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256M
+      image:
+        registry: harbor.rogers.lab/openet-software
+    runtimeContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+       registry: harbor.rogers.lab/openet-dependencies
+ 
+ro:
+  enabled: true
+  installRsync: "true"
+  context:
+    remote_peer_endpoint:
+    - host_name: signaling-manager
+      initiate_connection: true
+      origin_host: sigm0.smro.openet.com
+      origin_realm: smro.openet.com
+      port: 21157
+    - host_name: signaling-manager
+      initiate_connection: true
+      origin_host: sigm1.smro.openet.com
+      origin_realm: smro.openet.com
+      port: 21157
+    gycore:
+      HomeMCCMNC: 302320, 302370, 302720, 302721, 302820, 302920
+    rw:
+      cdr:
+        file_timeout: 60
+    notif_internf_client:
+      service_discovery_endpoint: http://${HOST_IP}:8500
+      tag: notification
+      global:
+        namespace: ecs
+  helm:
+    resources:
+      requests:
+        cpu: 300m 
+        memory: 1.5G
+      limits:
+        cpu: 2 
+        memory: 4G
+    initContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256M
+      image:
+        registry: harbor.rogers.lab/openet-software
+        repository: rogers_forge_service/ro_runtime
+        tag: 1.0.0-SNAPSHOT
+        pullPolicy: Always
+    runtimeContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software
+  chargingGatewayClient:
+    enabled: true
+    initContainer:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+      image:
+        registry: harbor.rogers.lab/openet-software
+        repository: sba-microservice/charging-gateway-client-server
+        tag: 1.0.0-log4j-upgrade-B1
+    runtimeContainer:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+      image:
+        registry: harbor.rogers.lab/openet-dependencies
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  customRsyncConfigJson: |
+    [
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/accessprivilege/AccessPrivilege.xml",
+            "destinationPath":"/opt/forge/ro/home/config/AccessPrivilege/AccessPrivilege.xml"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/abnumber/",
+            "destinationPath":"/opt/forge/ro/home/config/ABNumber"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/offercatalog/",
+            "destinationPath":"/opt/forge/ro/home/config/runtime_config/business_rules/offercatalog/OCRuntime/CTE_Ro/config"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/slm/ro/",
+            "destinationPath":"/opt/forge/ro/home/config/SubscriberLifecycleManager"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/statistics/ro/",
+            "destinationPath":"/opt/forge/ro/home/config/runtime_config/framework/Statistics_Management"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/roamingzonedetermination/",
+            "destinationPath":"/opt/forge/ro/home/RoamingZoneDetermination"
+      }
+    ]
+
+rogers-cog-notification:
+  enabled: true
+  installRsync: "false"
+  autoscaling:
+    maxReplicas: 1
+  pathPrefix: /rcn/v1
+  vsPrefix: /rcn/v1
+  camel:
+    component:
+      customProperties:
+        - name: kafka.bootstrap.servers
+          value: "odf-cluster-kafka-0.odf-cluster-kafka-brokers.cgf.svc:9092"
+        - name: kafka.schema.registry.url
+          value:
+        - name: kafka.topic.notification.edr
+          value: "topic-notify-odf"
+        - name: kafka.topic.notification.rogers
+          value: "topic-rogers-events"
+      consul:
+        serviceRegistry:
+          serviceName: notification
+  service:
+    livenessProbe:
+      initialDelaySeconds: 300
+      periodSeconds: 10
+      timeoutSeconds: 20
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 2
+        memory: 2G
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+      repository: rogers/rogers-cog-notification
+      tag: 0.0.1-SNAPSHOT
+      pullPolicy: "Always"
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  sbaRouter:
+    initContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software
+    runtimeContainer:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 2
+          memory: 2G
+      image:
+        registry: harbor.rogers.lab/openet-dependencies
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+       registry: harbor.rogers.lab/openet-dependencies
+
+rsyncd:
+  enabled: true
+  installRsyncInit: false
+  installAwsS3SyncInit: false
+  installGitSyncInit: true
+  gitSync:
+    git:
+      repoUrl: "ssh://git@10.0.2.165:222/RTRM/configuration.git"
+      branch: "master"
+      path: ""
+    image:
+      registry: harbor.rogers.lab/openet-software
+  image:
+    registry: harbor.rogers.lab/openet-software
+    
+rf:
+  enabled: true
+  context:
+    remote_peer_endpoint:
+    - host_name: signaling-manager
+      initiate_connection: true
+      origin_host: sigm0.smrf.openet.com
+      origin_realm: smrf.openet.com
+      port: 21052
+    - host_name: signaling-manager
+      initiate_connection: true
+      origin_host: sigm1.smrf.openet.com
+      origin_realm: smrf.openet.com
+      port: 21052
+  helm:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 256Mi
+      limits:
+        cpu: 2 
+        memory: 4G
+    initContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256M
+      image:
+        registry: harbor.rogers.lab/openet-software
+    runtimeContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    image:
+       registry: harbor.rogers.lab/openet-dependencies
+
+voltdb-operator:
+  global:
+    rbac:
+      pspEnabled: false
+      create: true
+  operator:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 250Mi
+      limits:
+        cpu: 400m
+        memory: 500Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+
+voltdb-sm:
+  enabled: true
+  cluster:
+    clusterSpec:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256Mi
+      image:
+        registry: harbor.rogers.lab/openet-software
+
+voltdb-sm-slc:
+  enabled: false
+
+voltdb-sm-ro:
+  global:
+    rbac:
+      pspEnabled: false
+      create: true
+  enabled: true
+  cluster:
+    clusterSpec:
+      persistentVolume:
+        size: 40Gi
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2.8G
+      image:
+        registry: harbor.rogers.lab/openet-software
+
+voltdb-sm-rf:
+  global:
+    rbac:
+      pspEnabled: false
+      create: true
+  enabled: true
+  cluster:
+    clusterSpec:
+      persistentVolume:
+        size: 40Gi
+      resources:
+        requests:
+          cpu: 500m 
+          memory: 2.8G
+      image:
+        registry: harbor.rogers.lab/openet-software
+
+voltdb:
+  operator:
+    image:
+      registry: harbor.rogers.lab/openet-software
+
