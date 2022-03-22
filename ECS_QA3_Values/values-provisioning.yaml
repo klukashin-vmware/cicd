@@ -1,0 +1,434 @@
+global:
+  glooRbac:
+    create: true
+  nfInstanceId: 61d54609-4b76-4991-8c02-cf4ab277a2a3
+  ecsNamespace: ecs
+  tls:
+    enabled: false
+  glooMtls:
+    enabled: false
+  ingress:
+    protocols:
+      http:
+        enabled: true
+      https:
+        enabled: false
+  serviceManagementGui:
+    externalWebOrigin: http://10.249.235.59
+  keycloak:
+    externalWebOrigin: ""
+
+gloo-kubernetes:
+  gloo:
+    gatewayProxies:
+      gatewayProxy:
+        service:
+          type: LoadBalancer
+          loadBalancerIP: 10.249.235.59
+          externalTrafficPolicy: Cluster
+    gloo:
+      deployment:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 600Mi
+          limits:
+            cpu: 200m
+            memory: 800Mi
+        image:
+          registry: harbor.rogers.lab/openet-dependencies/gloo-wrapper
+  postInstall:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies/alpine
+  global:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies/solo-io
+      
+app-filebeat-config:
+  enabled: true
+
+app-selector-webapp:
+  enabled: false
+
+bulk-provisioning-orchestrator:
+  enabled: true
+  fullnameOverride: "provisioning-bulk-provisioning-orchestrator"
+  persistentVolume:
+    storageClassName: vsphere-sc
+  service:
+    resources:
+      requests:
+        cpu: 1
+        memory: 1.5G
+      limits:
+        cpu: 2
+        memory: 2G
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+
+cog-pm:
+  enabled: true
+  installRsync: "false"
+  autoscaling:
+    maxReplicas: 1
+  service:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 256Mi
+      limits:
+        cpu: 2 
+        memory: 2G
+  initContainer:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+
+custom-provisioning-gateway:
+  enabled: true
+  installRsync: "false"
+  autoscaling:
+    maxReplicas: 1
+  service:
+    resources:
+      requests:
+        cpu: 300m 
+        memory: 1.5G
+      limits:
+        cpu: 2 
+        memory: 2G 
+  initContainer:
+    resources:
+      requests:
+        cpu: 0.1
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  sbaRouter:
+    initContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software
+    runtimeContainer:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 2
+          memory: 2G
+      image:
+        registry: harbor.rogers.lab/openet-dependencies
+
+job-scheduler:
+  enabled: true
+  installRsync: "false"
+  fullnameOverride: "provisioning-job-scheduler"
+  service:
+    resources:
+      requests:
+        cpu: 1 
+        memory: 2G
+      limits:
+        cpu: 2
+        memory: 3G
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+
+product-provisioning-gateway:
+  enabled: true
+  installRsync: "false"
+  autoscaling:
+    maxReplicas: 1
+  service:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 256Mi
+      limits:
+        cpu: 2 
+        memory: 2G
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  sbaRouter:
+    initContainer:
+      image:
+        registry: harbor.rogers.lab/openet-software
+    runtimeContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256Mi
+        limits:
+          cpu: 2
+          memory: 2G
+      image:
+        registry: harbor.rogers.lab/openet-dependencies
+
+profile-manager-gui-webapp:
+  enabled: true
+  fullnameOverride: "provisioning-profile-manager-gui-webapp"
+  service:
+    resources:
+      requests:
+        cpu: 1 
+        memory: 2G
+      limits:
+        cpu: 2
+        memory: 3G
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software 
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+
+profile-manager-ui-api:
+  enabled: true
+  fullnameOverride: "provisioning-profile-manager-ui-api"
+  persistentVolume:
+    storageClassName: vsphere-sc
+  service:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 2
+        memory: 2G
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+
+provisioning:
+  enabled: false
+  installRsync: "false"
+
+registration-agent:
+  enabled: false
+
+rsyncd:
+  enabled: false
+  installRsyncInit: false
+  installAwsS3SyncInit: false
+  installGitSyncInit: false
+
+sba-profile-manager:
+  enabled: true
+  installRsync: "false"
+  service:
+    resources:
+      requests:
+        cpu: 200m 
+        memory: 400Mi 
+      limits:
+        cpu: 2 
+        memory: 2G
+  jvm:
+    options:
+      user-defined-options:
+      - "-Dlog4j.formatMsgNoLookups=true"
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 200Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+
+sba-provisioning:
+  enabled: true
+  installRsync: "false"
+  ecsNamespace: ecs
+  service:
+    resources:
+      requests:
+        cpu: 300m 
+        memory: 1.5G
+      limits:
+        cpu: 2 
+        memory: 2G
+  autoscaling:
+    maxReplicas: 1
+  jvm:
+    options:
+      user-defined-options:
+      - "-Dlog4j.formatMsgNoLookups=true"
+  initContainer:
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 256Mi
+    image:
+      registry: harbor.rogers.lab/openet-software
+      repository: sba-microservice/provisioning-service-server
+      tag: 3.3.0-log4j-upgrade-B1
+  chargingGatewayClient:
+    initContainer:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+      image:
+        registry: harbor.rogers.lab/openet-software 
+        repository: sba-microservice/charging-gateway-client-server
+        tag: 1.0.0-log4j-upgrade-B1
+    runtimeContainer:
+      resources:
+        requests:
+          cpu: 100m 
+          memory: 256Mi
+        limits:
+          cpu: 1
+          memory: 1G
+  runtimeContainer:
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+  housekeeping:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  rsync:
+    image:
+      registry: harbor.rogers.lab/openet-software
+  filebeat:
+    resources:
+      requests:
+        cpu: 40m 
+        memory: 200Mi
+      limits:
+        cpu: 80m 
+        memory: 400Mi
+    image:
+      registry: harbor.rogers.lab/openet-dependencies
+
+sftp-server:
+  enabled: false
+
+voltdb-operator:
+  enabled: false
+
+voltdb-pm:
+  enabled: false
+

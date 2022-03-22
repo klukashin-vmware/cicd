@@ -1,0 +1,90 @@
+nodeSelector:
+  odf.openet.com/general: "true"
+
+tolerations:
+ - key: "openet.com/odf-general"
+   operator: "Equal"
+   value: "true"
+   effect: "NoSchedule"
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 8G
+  limits:
+    cpu: 400m
+    memory: 10G
+
+image:
+  repository: harbor.rogers.lab/openet-software/jenkins
+  name: operator
+  tag: 0.19.0.2-mod
+
+env:
+  - name: JAVA_OPTS
+    value: -Dlog4j2.formatMsgNoLookups=true
+
+zookeeper:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+kafka:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+kafkaConnect:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+kafkaConnects2i:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+topicOperator:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+userOperator:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+kafkaInit:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+tlsSidecarKafka:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+tlsSidecarEntityOperator:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+kafkaMirrorMaker:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+kafkaBridge:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+kafkaExporter:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+jmxTrans:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+kafkaMirrorMaker2:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+cruiseControl:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
+tlsSidecarCruiseControl:
+  image:
+    repository: harbor.rogers.lab/openet-dependencies/strimzi
+
