@@ -1,0 +1,58 @@
+tls:
+  createCertificates: false
+
+jaeger:
+  nameOverride: "jaeger"
+  fullnameOverride: "jaeger"
+  storage:
+    elasticsearch:
+      scheme: http
+  agent:
+    cmdlineParams:
+      reporter.grpc.tls.enabled: null
+      reporter.grpc.tls.ca: null
+      reporter.grpc.tls.cert: null
+      reporter.grpc.tls.key: null
+    extraSecretMounts: []
+    resources: 
+      requests:
+        cpu: 20m
+        memory: 128Mi 
+    tolerations:
+    - key: "openet.com/elasticsearch"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+    image: harbor.rogers.lab/openet-dependencies/jaegertracing/jaeger-agent
+  collector:
+    cmdlineParams:
+      es.tls.enabled: null
+      es.tls.skip-host-verify: null
+      es.tls.ca: null
+      collector.http.tls.enabled: null
+      collector.http.tls.client-ca: null
+      collector.http.tls.cert: null
+      collector.http.tls.key: null
+      collector.grpc.tls.enabled: null
+      collector.grpc.tls.client-ca: null
+      collector.grpc.tls.cert: null
+      collector.grpc.tls.key: null
+    extraSecretMounts: []
+    resources: 
+      requests:
+        cpu: 200m
+        memory: 400Mi
+    image: harbor.rogers.lab/openet-dependencies/jaegertracing/jaeger-collector
+  query:
+    oAuthSidecar:
+      enabled: false
+    cmdlineParams:
+      es.tls.enabled: null
+      es.tls.ca: null
+    extraSecretMounts: []
+    resources:
+      requests:
+         cpu: 200m
+         memory: 400Mi
+    image: harbor.rogers.lab/openet-dependencies/jaegertracing/jaeger-query
+
