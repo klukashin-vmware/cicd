@@ -1,0 +1,61 @@
+fullnameOverride: "sftp-server"
+
+autoscaling:
+  enabled: true
+  maxReplicas: 1
+
+storage:
+  createVolumeClaim: true
+  class: "vsphere-sc"
+  pvcName: "sftp-shared-volume"
+  size: 10Gi
+  dirName: "xdr"
+
+usePublicKeysLogin: true
+useOwnSshHostKey: true
+
+nodeSelector:
+  odf.openet.com/general: "true"
+
+tolerations:
+ - key: "openet.com/odf-general"
+   operator: "Equal"
+   value: "true"
+   effect: "NoSchedule"
+
+image:
+  registry: harbor.rogers.lab/openet-dependencies
+
+service:
+  type: NodePort
+  port:
+    number: 22
+    type: sftp
+    targetPort: 22
+    nodePort: 30022
+  resources:
+    requests:
+      cpu: 1
+      memory: 2G
+    limits:
+      cpu: 1
+      memory: 2G
+
+user:
+  username: openet
+  password: Openet01
+  uid: 1000
+  gid: 1000
+
+ssh:
+  publicKeys:
+    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC5uF6of7Y6J2TcOlefchYWIVgGXIsZC/HM/FCFTG7jPBTx0Fdf0SLfluLnABL9TO0w6zkZwSTVXrW8fzjVWAQtxSwAX+Ssch1pCQhUdMVoH28BJBSEAVZ2yTBvKFAz/sSQijYCczA+RTE84Zs3wYgH3PhZ0qrTdR3KNyWv3JzcXiyou17Xyay18HuFlzRnZ94ZKi3nGHF4kPgUl+3paQlMnoC07jA8/B4+ZV5NJUibJAiCD/YHpgnz/m4Do40pEbyEqMQCn/XHYg7ros77/kp0XhSr8pCH9zO9+8IQ/9jEWPrm4lEyLx0LBnASp58AeT0hksk5Rhl8Zu8K2TE6XFuZbIkrrexwSTUMWWl/HOLZyaNr6qYW/8pKuXeK77SmdQKWX9ByZih1ASBV/KBB4X9j5+7IQ6lSscGDW172Mk/SDFq9SEdGCCSvJbfpb1Yq0dBN4nvykF5u+7GNSQ7HeRAq9BrQLIHo2GKw9JAZvj1dbZU7yAx+l2cUsPNTyQOOYFU="
+
+housekeeping:
+  image:
+    registry: harbor.rogers.lab/openet-software
+  volumes:
+    name: sftp-housekeeping-config-volume
+  configMap:
+    name: sftp-housekeeping-config-map
+
