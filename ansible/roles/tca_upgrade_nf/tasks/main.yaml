@@ -1,0 +1,20 @@
+---
+- name: Upgrade CNF Instance
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/hybridity/api/vnflcm/v1/cnf_instances/{{ cnf_for_upgrade_id }}/upgrade"
+    method: POST
+    body: "{{ lookup('file','cnf_upgrade.json') }}"
+    return_content: yes
+    status_code: [200, 201]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+  register: tca_upgrade_results
+
+- debug: var=tca_upgrade_results.json
+  when: debuglevel | int > 0
+
