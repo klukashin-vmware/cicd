@@ -1,0 +1,73 @@
+- name: Generate new descriptor_id/Create design draft
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/hybridity/api/vnfpkgm/v1/vnf_packages/design"
+    method: POST
+    body: "{{ lookup('file','cnf_design_draft.json') }}"
+    return_content: yes
+    status_code: [200, 201]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+      Version: v2
+  register: tca_design_draft_results
+
+- debug: var=tca_design_draft_results.json
+  when: debuglevel | int > 0
+
+- set_fact:
+    new_descriptor: "{{ tca_design_draft_results.json.id }}"
+
+- name: Create new CNF Catalogue Item
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/telco/api/vnfpkgm/v2/vnf_packages"
+    method: POST
+    body: "{{ lookup('file','cnf_design_onboard.json') }}"
+    return_content: yes
+    status_code: [200, 201]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+      Version: v2
+  register: tca_design_onboard_results
+
+- debug: var=tca_design_onboard_results.json
+  when: debuglevel | int > 0
+
+- set_fact:
+    cnfPkg_id: "{{ tca_design_onboard_results.json.id }}"
+
+- name: Update csar file
+  ansible.builtin.shell: unzip ../Upgrade/csars/{{ csar }} -d mycsar && cd mycsar/Definitions && sed -i 's/{{ chart_version_old }}/{{ chart_version_new }}/g' NFD.yaml && sed -i 's/{{ old_descriptor }}/{{ new_descriptor }}/g' NFD.yaml && cd .. && zip -r mycsar1.csar TOSCA-Metadata/ Definitions/ Artifacts/ NFD.mf
+
+- name: Upload csar file
+  ansible.builtin.shell: 'curl -X PUT --url https://10.0.2.166/telco/api/vnfpkgm/v2/vnf_packages/{{ tca_design_onboard_results.json.id }}/package_content -H "Accept-Type: application/zip" -H "Content-Type: multipart/form-data" -H "x-hm-authorization: {{ tca_authorization  }}" -F "file=@./mycsar/mycsar1.csar" -H "Version: v2" -k'
+
+- name: Clean up mycsar dir
+  ansible.builtin.shell: rm -r mycsar
+  
+- name: Delete design draft
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/hybridity/api/vnfpkgm/v1/vnf_packages/design/drafts/{{ new_descriptor }}"
+    method: DELETE
+    return_content: yes
+    status_code: [200, 201]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+      Version: v2
+  register: tca_design_draft_delete_results
+
+- debug: var=tca_design_draft_delete_results.json
+  when: debuglevel | int > 0
