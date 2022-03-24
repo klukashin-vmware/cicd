@@ -69,6 +69,9 @@
 - name: encode values-odf.yaml
   shell: echo {{ lookup('file','../{{ values_folder }}/values-odf.yaml') | b64encode }} > values-odf.base64
 
+- name: encode values-sftp.yaml
+  shell: echo {{ lookup('file','../{{ values_folder }}/values-sftp.yaml') | b64encode }} > values-sftp.base64
+
   #- name: ecode values-monitoring.yaml
   #shell: echo {{ lookup('file','../{{ values_folder }}/values-monitoring.yaml') | b64encode }} > values-monitoring.base64
 
