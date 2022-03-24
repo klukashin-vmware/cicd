@@ -20,6 +20,11 @@ nsxt_fqdn: 10.0.2.185
 nsxt_username: admin
 nsxt_password: R0gers!23VMware1!
 
+harbor_validate_certificates: no
+harbor_fqdn: harbor.rogers.lab
+harbor_username: admin
+harbor_password: R0gers!23
+
 maxSessionTimeSeconds: 1800
 time_zone: America/Los_Angeles
 
