@@ -1,0 +1,19 @@
+- name: read params from input file
+  vars:
+    upgrade_param_file: "{{ lookup('file','ecsUpgradeParams.yaml') | from_yaml }}"
+  set_fact:
+    new_chart: "{{ upgrade_param_file.new_chart }}"
+    cluster: "{{ upgrade_param_file.cluster }}"
+    cnf: "{{ upgrade_param_file.cnf }}"
+    chart_version_old: "{{ upgrade_param_file.chart_version_old }}"
+    chart_version_new: "{{ upgrade_param_file.chart_version_new }}"
+    external_repo: "{{ upgrade_param_file.external_repo }}"
+    harbor_project: "{{ upgrade_param_file.harbor_project }}"
+    image_name: "{{ upgrade_param_file.image_name }}"
+    image_version_old: "{{ upgrade_param_file.image_version_old }}"
+    image_version_new: "{{ upgrade_param_file.image_version_new }}"
+    csar: "{{ upgrade_param_file.csar }}"
+    old_descriptor: "{{ upgrade_param_file.old_descriptor }}"    
+    
+- name: Push helm charts to Harbor
+  ansible.builtin.shell: helm push --username={{ harbor_username }} --password={{ harbor_password }} ../Upgrade/charts/{{ new_chart }} https://{{ harbor_fqdn }}/chartrepo/openet-software
