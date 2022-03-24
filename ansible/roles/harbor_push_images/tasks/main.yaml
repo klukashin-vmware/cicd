@@ -1,0 +1,8 @@
+- name: Pull from exteral repo
+  ansible.builtin.shell: docker pull {{ external_repo }}/{{ image_name }}:{{ image_version_new }}
+
+- name: Tag images
+  ansible.builtin.shell: docker tag {{ external_repo }}/{{ image_name }}:{{ image_version_new }} {{ harbor_fqdn }}/{{ harbor_project }}/{{ image_name }}:{{ image_version_new }}
+
+- name: Push images to Harbor
+  ansible.builtin.shell: docker push {{ harbor_fqdn }}/{{ harbor_project }}/{{ image_name }}:{{ image_version_new }}
