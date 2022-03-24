@@ -1,0 +1,12 @@
+cluster: test-kir-network-service
+cnf: test-cluster-cert-manager
+csar: openet-certmanager.csar
+old_descriptor: nfd_01863c7f-26c1-4df7-9fbf-6ce046f71ef9
+new_chart: cert-manager-v1.0.4.tgz
+chart_version_old: v1.0.3
+chart_version_new: v1.0.4
+external_repo: harbor.rogers.lab/kir-test
+harbor_project: kir-test-upgrade
+image_name: jetstack/cert-manager-controller
+image_version_old: v1.0.3
+image_version_new: v1.0.4       

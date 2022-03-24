@@ -1,0 +1,28 @@
+{
+  "vimId": "{{ vim_cluster_id }}",
+  "nfdId": "{{ new_descriptor }}",
+  "upgradeType": "upgrade",
+  "upgradeOptions": {
+    "helm1": {
+      "resetValues": true
+    }
+  },
+  "additionalParams": {
+    "vimId": "{{ vim_cluster_id }}",
+    "namespace": "cert-manager",
+    "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+    "username": "admin",
+    "password": "R0gers!23",
+    "metadata": [
+      {
+        "values": ""
+      }
+    ]
+  },
+  "extManagedVirtualLinks": [
+    {}
+  ],
+  "extVirtualLinks": [
+    {}
+  ]
+}
