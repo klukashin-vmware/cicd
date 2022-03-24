@@ -491,5 +491,31 @@
                 ]
             }
         },                                                                                                                                 
+        {
+            "vnfProfileId": "openet-sftp-server18",
+            "additionalParams": {
+                "disableGrant": true,
+                "nfType": "cnf",
+                "vimConnectionInfo": [
+                    {
+                        "vimId": "{{ vim_cluster_id }}"
+                    }
+                ],
+                "vduParams": [
+                    {
+                        "namespace": "cgf",
+                        "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+                        "username": "admin",
+                        "password": "R0gers!23",
+                        "metadata": [
+                            {
+                              "values": "{{ lookup('file','values-sftp.base64') }}"
+                            }
+                        ],
+                        "vduName": "helm1"
+                    }
+                ]
+            }
+        }
     ]
 }
