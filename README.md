@@ -32,6 +32,7 @@ Concourse pipelines check out GitEA repo and run relevant Ansible Playbook. Ansi
 2.1.	TKG Cluster creation pipeline
 
 Pipeline name: create-cluster
+
 What it does: Pipeline deploy TKG cluster
 Pipeline input in GitEA: https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/mycluster.j2
 
