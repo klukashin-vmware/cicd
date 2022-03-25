@@ -34,12 +34,15 @@ Concourse pipelines check out GitEA repo and run relevant Ansible Playbook. Ansi
 Pipeline name: create-cluster
 
 What it does: Pipeline deploy TKG cluster
+
 Pipeline input in GitEA: https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/mycluster.j2
 
 2.2.	Deploy AKO pipeline
 
 Pipeline name: deploy-ako
+
 What it does: Pipeline deploy AKO(AVI Kubernetes Operator) Csar on TKG Cluster
+
 Pipeline inputs in GitEA:
 https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/cnf_resource.json
 https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/cnf_instantiate.j2
@@ -48,7 +51,9 @@ https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/values.yaml
 2.3.	Configure NSXT pipeline
 
 Pipeline name: config-nsxt
+
 What it does: Pipeline adds static route on T1 GW for Cluster VIP and adds SNAT Rules for all workers/masters of the TKG cluster
+
 Pipeline inputs in GitEA:
 https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/clusterIPs.yaml
 https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/values.yaml
@@ -56,7 +61,9 @@ https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/values.yaml
 2.4.	Deploy ECS Network Service pipeline
 
 Pipeline name: deploy-network-service
+
 What it does: Pipeline deploy full ECS as a network service(includes instantiating of 17 CNFs and tainting/kernel params workflows) on the TKG Cluster
+
 Pipeline inputs:
 https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/ecsNSParams.yaml (network service config file)
 https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/ns_resource.json
@@ -66,9 +73,10 @@ https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ECS_XXX_Values (folder
 2.5	    Upgrade ECS network function pipeline
 
 Pipeline name: upgrade-nf
-What it does: Pipeline automate Upgrade scenario for CNF. It consists of 4 steps: push new helm chart to repo, push new images to repo, build a new csar file and push it TCA Catalogue, run Upgrade against existing CNF instance.
-Pipeline inputs:
 
+What it does: Pipeline automate Upgrade scenario for CNF. It consists of 4 steps: push new helm chart to repo, push new images to repo, build a new csar file and push it TCA Catalogue, run Upgrade against existing CNF instance.
+
+Pipeline inputs:
 https://gitea.rogers.lab/klukashin/cicd/src/branch/master/Upgrade (folder for new artifacts)
 https://gitea.rogers.lab/klukashin/cicd/src/branch/master/ansible/ecsUpgradeParams.yaml (Upgrade config file)
 
