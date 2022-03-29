@@ -1,0 +1,35 @@
+resource_types:
+- name: ansible-playbook
+  type: docker-image
+  source:
+    repository: troykinsella/concourse-ansible-playbook-resource
+    tag: latest
+
+resources:
+- name: ansible
+  type: ansible-playbook
+  source:
+    debug: true
+    user: cloud_user
+    verbose: vvv
+
+- name: source-code
+  type: git
+  source:
+    uri: https://gitea.rogers.lab/klukashin/cicd
+    skip_ssl_verification: true    
+
+jobs:
+  - name: ansible-concourse
+    plan:
+    - get: source-code # git resource
+    - put: ansible
+      params:
+        diff: true
+        become: true
+        become_user: root
+        inventory: localhost
+        playbook: ./ansible/playbook-smoke-tests.yaml
+        path: source-code
+
+
