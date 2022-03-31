@@ -1,2 +1,2 @@
 - name: Install helm
-  ansible.builtin.shell: wget https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz && tar -zxvf helm-v3.5.4-linux-amd64.tar.gz && mv linux-amd64/helm /usr/local/bin/helm
+  ansible.builtin.shell: sudo apt install curl && curl https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz -o helm-v3.5.4-linux-amd64.tar.gz && tar -zxvf helm-v3.5.4-linux-amd64.tar.gz && mv linux-amd64/helm /usr/local/bin/helm
