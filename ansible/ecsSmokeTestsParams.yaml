@@ -1,0 +1,14 @@
+harbor_project_main: openet-software
+harbor_project_dependencies: openet-dependencies
+image_name:
+  - jetstack/cert-manager-controller
+  - jetstack/cert-manager-webhook
+  - jetstack/cert-manager-cainjector    
+image_version: v1.0.4
+chart_name:
+  - cert-manager        
+chart_version: v1.0.3   
+csar_name:
+  - openet-certmanager-                
+sw_version: 8.6
+
