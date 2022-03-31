@@ -6,6 +6,7 @@
   vars_files:
     - ./default/main.yaml
   roles:
+    - { role: install_helm }  
     - { role: smoke_tests_pre_check }          
-    - { role: smoke_tests_post_deployment }
-    - { role: smoke_tests_functional }
+    #- { role: smoke_tests_post_deployment }
+    #- { role: smoke_tests_functional }
