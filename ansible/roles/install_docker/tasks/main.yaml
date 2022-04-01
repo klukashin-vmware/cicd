@@ -14,9 +14,9 @@
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
   ansible.builtin.shell: apk add sudo  
 
-- name: Install iptables
+#- name: Install iptables
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
-  ansible.builtin.shell: apk add iptables    
+#  ansible.builtin.shell: apk add iptables    
 
 - name: copy crt file
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
@@ -36,5 +36,5 @@
 - name: docker login to harbor
   ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} https://harbor.rogers.lab
 
-- name: Pull from exteral repo
-  ansible.builtin.shell: docker pull harbor.rogers.lab/kir-test/jetstack/cert-manager-controller:v1.0.4
+#- name: Pull from exteral repo
+#  ansible.builtin.shell: docker pull harbor.rogers.lab/kir-test/jetstack/cert-manager-controller:v1.0.4
