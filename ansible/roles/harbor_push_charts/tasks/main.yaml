@@ -13,7 +13,6 @@
     image_version_old: "{{ upgrade_param_file.image_version_old }}"
     image_version_new: "{{ upgrade_param_file.image_version_new }}"
     csar: "{{ upgrade_param_file.csar }}"
-    old_descriptor: "{{ upgrade_param_file.old_descriptor }}"    
     
 - name: Push helm charts to Harbor
   ansible.builtin.shell: helm push --username={{ harbor_username }} --password={{ harbor_password }} ../Upgrade/charts/{{ new_chart }} https://{{ harbor_fqdn }}/chartrepo/openet-software
