@@ -2,13 +2,13 @@
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
   ansible.builtin.shell: apk add docker
 
-- name: Sleep for 15 seconds and continue with play
-  wait_for:
-    timeout: 15
+#- name: Sleep for 15 seconds and continue with play
+#  wait_for:
+#    timeout: 15
 
-- name: start docker
+#- name: start docker
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
-  ansible.builtin.shell: service docker start
+#  ansible.builtin.shell: service docker start
 
-#- name: docker login to harbor
-# ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} harbor.rogers.lab
+- name: docker login to harbor
+  ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} harbor.rogers.lab
