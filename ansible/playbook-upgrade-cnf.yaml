@@ -9,6 +9,6 @@
     - { role: harbor_push_charts }          
     - { role: harbor_push_images }
     - { role: tca_api }
+    - { role: tca_ids_upgrade }      
     - { role: tca_build_csar }
-    - { role: tca_ids_upgrade }        
     - { role: tca_upgrade_nf }      

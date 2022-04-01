@@ -2,27 +2,20 @@
   "vimId": "{{ vim_cluster_id }}",
   "nfdId": "{{ new_descriptor }}",
   "upgradeType": "rolling",
-  "upgradeOptions": {
-    "helm1": {
-      "resetValues": true
-    }
-  },
   "additionalParams": {
-    "vimId": "{{ vim_cluster_id }}",
+    "helm1": {
+      "vimId": "{{ vim_cluster_id }}",
+      "namespace": "cert-manager",
+      "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
+      "username": "admin",
+      "password": "R0gers!23",
+      "metadata": {
+        "values": "{{ lookup('file','values-cert-manager.base64') }}"
+      }
+    },
     "namespace": "cert-manager",
     "repoUrl": "https://harbor.rogers.lab/chartrepo/openet-software",
     "username": "admin",
-    "password": "R0gers!23",
-    "metadata": [
-      {
-        "values": ""
-      }
-    ]
-  },
-  "extManagedVirtualLinks": [
-    {}
-  ],
-  "extVirtualLinks": [
-    {}
-  ]
+    "password": "R0gers!23"
+  }
 }
