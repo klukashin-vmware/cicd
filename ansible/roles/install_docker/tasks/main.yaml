@@ -6,7 +6,7 @@
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
   ansible.builtin.shell: apk add openrc
 
-- name: Install openrc
+- name: Install ca-certificates
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
   ansible.builtin.shell: apk add --no-cache ca-certificates && update-ca-certificates
 
