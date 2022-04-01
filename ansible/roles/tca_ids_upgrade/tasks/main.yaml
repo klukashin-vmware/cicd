@@ -41,11 +41,10 @@
 - name: get cnf instance ID for upgrade
   set_fact:
     cnf_for_upgrade_id: "{{ item.id }}"
+    old_descriptor: "{{ item.vnfdId }}"    
   with_items: "{{ tca_cnf_results.json }}"
   when: item.vnfInstanceName == "{{ cnf }}"
 
-- name: generate template
-  template:
-    src: cnf_upgrade.j2
-    dest: cnf_upgrade.json
+- name: encode values-cert-manager.yaml
+  shell: echo {{ lookup('file','../Upgrade/values/values-cert-manager.yaml') | b64encode }} > values-cert-manager.base64
 
