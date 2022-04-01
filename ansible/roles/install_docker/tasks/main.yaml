@@ -23,7 +23,7 @@
 # ansible.builtin.shell: service docker status
 
 - name: run docker deamon
-  ansible.builtin.shell: dockerd
+  ansible.builtin.shell: sudo dockerd
 
 - name: docker login to harbor
   ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} https://harbor.rogers.lab
