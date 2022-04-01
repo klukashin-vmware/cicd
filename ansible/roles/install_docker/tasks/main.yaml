@@ -10,9 +10,13 @@
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
   ansible.builtin.shell: apk add --no-cache ca-certificates && update-ca-certificates
 
-- name: Install ca-certificates
+- name: Install sudo
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
   ansible.builtin.shell: apk add sudo  
+
+- name: Install iptables
+  # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
+  ansible.builtin.shell: apk add iptables    
 
 - name: copy crt file
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
