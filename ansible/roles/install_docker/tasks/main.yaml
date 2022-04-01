@@ -22,6 +22,9 @@
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
 # ansible.builtin.shell: service docker status
 
+- name: run docker deamon
+  ansible.builtin.shell: dockerd
+
 - name: docker login to harbor
   ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} https://harbor.rogers.lab
 
