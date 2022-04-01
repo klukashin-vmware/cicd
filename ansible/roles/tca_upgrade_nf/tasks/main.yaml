@@ -1,4 +1,9 @@
 ---
+- name: generate template
+  template:
+    src: cnf_upgrade.j2
+    dest: cnf_upgrade.json
+
 - name: Upgrade CNF Instance
   uri:
     validate_certs: "{{ tca_validate_certificates }}"
