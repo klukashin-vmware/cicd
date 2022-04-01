@@ -19,7 +19,7 @@
 # ansible.builtin.shell: service docker status
 
 - name: docker login to harbor
-  ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} harbor.rogers.lab
+  ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} https://harbor.rogers.lab
 
 - name: Pull from exteral repo
   ansible.builtin.shell: docker pull harbor.rogers.lab/kir-test/jetstack/cert-manager-controller:v1.0.4
