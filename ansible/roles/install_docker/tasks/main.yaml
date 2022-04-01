@@ -12,7 +12,7 @@
 
 - name: copy crt file
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
-  ansible.builtin.shell: mkdir /etc/docker/certs.d && mkdir /etc/docker/certs.d/harbor.rogers.lab && cp ca.crt /etc/docker/certs.d/harbor.rogers.lab
+  ansible.builtin.shell: mkdir /etc/docker && mkdir /etc/docker/certs.d && mkdir /etc/docker/certs.d/harbor.rogers.lab && cp ca.crt /etc/docker/certs.d/harbor.rogers.lab
 
 #- name: Sleep for 15 seconds and continue with play
 #  wait_for:
