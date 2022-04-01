@@ -10,12 +10,12 @@
 #  wait_for:
 #    timeout: 15
 
-- name: start docker
+#- name: start docker
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
-  ansible.builtin.shell: service docker status
+# ansible.builtin.shell: service docker status
 
-#- name: docker login to harbor
-#  ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} harbor.rogers.lab
+- name: docker login to harbor
+  ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} harbor.rogers.lab
 
 - name: Pull from exteral repo
   ansible.builtin.shell: docker pull harbor.rogers.lab/kir-test/jetstack/cert-manager-controller:v1.0.4
