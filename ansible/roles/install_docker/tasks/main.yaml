@@ -6,9 +6,9 @@
 #  wait_for:
 #    timeout: 15
 
-#- name: start docker
+- name: start docker
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
-#  ansible.builtin.shell: sh service docker start
+  ansible.builtin.shell: sh service docker start
 
 #- name: docker login to harbor
 #  ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} harbor.rogers.lab
