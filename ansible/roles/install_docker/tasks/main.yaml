@@ -1,0 +1,5 @@
+- name: Install docker
+  ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && ./get-docker.sh $$ docker version
+
+- name: docker login to harbor
+  ansible.builtin.shell: docker login --username {{ harbor_username }} --password {{ harbor_password }} harbor.rogers.lab
