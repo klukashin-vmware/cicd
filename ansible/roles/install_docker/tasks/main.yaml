@@ -10,6 +10,10 @@
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
   ansible.builtin.shell: apk add --no-cache ca-certificates && update-ca-certificates
 
+- name: Install ca-certificates
+  # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
+  ansible.builtin.shell: apk add sudo  
+
 - name: copy crt file
   # ansible.builtin.shell: curl -fsSL https://get.docker.com -o get-docker.sh && chmod 777 get-docker.sh && ./get-docker.sh $$ docker version
   ansible.builtin.shell: mkdir /etc/docker && mkdir /etc/docker/certs.d && mkdir /etc/docker/certs.d/harbor.rogers.lab && cp ca.crt /etc/docker/certs.d/harbor.rogers.lab
