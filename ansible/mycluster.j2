@@ -1,7 +1,7 @@
 {
   "name": "test-cicd-cluster",
   "clusterType": "WORKLOAD",
-  "clusterTemplateId": "Test-WL-Cluster",
+  "clusterTemplateId": "rtrm-qa2-spec-template-CciZ",
   "hcxCloudUrl": "https://tca-cp-wl.rogers.lab",
   "vmTemplate": "photon-3-kube-v1.20.5-vmware.2-tkg.1-3176963957469777230",
   "endpointIP": "{{ ip_address }}",
@@ -67,7 +67,7 @@
   ],
   "workerNodes": [
     {
-      "name": "np1",
+      "name": "volt",
       "placementParams": [
         {
           "type": "ClusterComputeResource",
@@ -89,6 +89,102 @@
           "nameservers": []
         }
       ]
-    }
+    },
+    {
+      "name": "ecs",
+      "placementParams": [
+        {
+          "type": "ClusterComputeResource",
+          "name": "wl-cl01"
+        },
+        {
+          "type": "Datastore",
+          "name": "wl-ds-vsan01"
+        },
+        {
+          "type": "ResourcePool",
+          "name": "rp-tkg"
+        }
+      ],
+      "networks": [
+        {
+          "label": "MANAGEMENT",
+          "networkName": "srv-test-clusters",
+          "nameservers": []
+        }
+      ]
+    },
+    {
+      "name": "ums",
+      "placementParams": [
+        {
+          "type": "ClusterComputeResource",
+          "name": "wl-cl01"
+        },
+        {
+          "type": "Datastore",
+          "name": "wl-ds-vsan01"
+        },
+        {
+          "type": "ResourcePool",
+          "name": "rp-tkg"
+        }
+      ],
+      "networks": [
+        {
+          "label": "MANAGEMENT",
+          "networkName": "srv-test-clusters",
+          "nameservers": []
+        }
+      ]
+    },
+    {
+      "name": "ads",
+      "placementParams": [
+        {
+          "type": "ClusterComputeResource",
+          "name": "wl-cl01"
+        },
+        {
+          "type": "Datastore",
+          "name": "wl-ds-vsan01"
+        },
+        {
+          "type": "ResourcePool",
+          "name": "rp-tkg"
+        }
+      ],
+      "networks": [
+        {
+          "label": "MANAGEMENT",
+          "networkName": "srv-test-clusters",
+          "nameservers": []
+        }
+      ]
+    },
+    {
+      "name": "odf",
+      "placementParams": [
+        {
+          "type": "ClusterComputeResource",
+          "name": "wl-cl01"
+        },
+        {
+          "type": "Datastore",
+          "name": "wl-ds-vsan01"
+        },
+        {
+          "type": "ResourcePool",
+          "name": "rp-tkg"
+        }
+      ],
+      "networks": [
+        {
+          "label": "MANAGEMENT",
+          "networkName": "srv-test-clusters",
+          "nameservers": []
+        }
+      ]
+    }                 
   ]
 }
