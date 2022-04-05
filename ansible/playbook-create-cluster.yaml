@@ -8,5 +8,5 @@
   roles:
     - { role: tca_api }
     - { role: tca_ids }
-    - { role: netbox_getIP }              
+    #- { role: netbox_getIP }              
     - { role: create_cluster }      
