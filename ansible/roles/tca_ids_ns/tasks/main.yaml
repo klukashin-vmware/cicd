@@ -13,7 +13,7 @@
 - name: Get clusters
   uri:
     validate_certs: "{{ tca_validate_certificates }}"
-    url: "https://{{ tca_fqdn }}/hybridity/api/infra/k8s/clusters"
+    url: "https://{{ tca_fqdn }}/hybridity/api/infra/k8s/clusters?filter=(eq,clusterName,{{ cluster_name }})"
     method: GET
     return_content: yes
     status_code: [200]
@@ -25,11 +25,14 @@
       x-hm-authorization: "{{ tca_authorization  }}"
   register: tca_cluster_results
 
-- name: get cluster vimID
-  set_fact:
-    vim_cluster_id: "{{ item.vimId }}"
-  with_items: "{{ tca_cluster_results.json }}"
-  when: item.clusterName == "{{ cluster_name }}"
+- set_fact:
+    vim_cluster_id: "{{ tca_cluster_results.json.vimId }}"
+
+#- name: get cluster vimID
+#  set_fact:
+#    vim_cluster_id: "{{ item.vimId }}"
+#  with_items: "{{ tca_cluster_results.json }}"
+#  when: item.clusterName == "{{ cluster_name }}"
 
 - debug: var=vim_cluster_id
 
