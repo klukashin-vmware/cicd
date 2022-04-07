@@ -1,5 +1,5 @@
-nsInstanceName: ecs-ns-test-cluster
-cluster: test-kir-network-service
-valuesFolder: ECS_QA1_Values
+nsInstanceName: ecs-ns-dev2
+cluster: rtrm-dev2
+valuesFolder: ECS_DEV2_Values
 
 
