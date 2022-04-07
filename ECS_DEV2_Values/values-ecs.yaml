@@ -5,6 +5,16 @@ global:
     enabled: false
   glooMtls:
     enabled: false
+  tracing:
+    configmap: global-tracing
+    type: Jaeger
+    config:
+      agentHost: jaeger-agent.monitoring.svc.cluster.local
+      propagation: b3
+      samplerType: probabilistic
+      samplerParam: "0.001"
+      createRootSpan: true
+      subscriberTracing: true
   nfInstanceId: e9abdb2a-3df1-4f3b-a5f0-80c1c8ea9782
     
 gloo-kubernetes:
@@ -12,9 +22,9 @@ gloo-kubernetes:
     gatewayProxies:
       gatewayProxy:
         service:
-          type: NodePort
-          httpNodePort: 31040
-          httpsNodePort: 31041
+          type: LoadBalancer
+          loadBalancerIP: 10.249.235.115
+          externalTrafficPolicy: Cluster
     gloo:
       deployment:
         resources:
@@ -51,6 +61,13 @@ chf:
         memory: 2G
   autoscaling:
     maxReplicas: 1
+  kafkaAppender:
+    enabled: true
+    bootstrapServers: "odf-cluster-kafka-bootstrap.cgf.svc.cluster.local:9092"
+    schemaRegistryUrl: "http://odf-cluster-schema-registry.cgf.svc.cluster.local:8081"
+    tlsEnabled: false
+  elasticAppender:
+    enabled: false
   jvm:
     options:
       log4j2-opts:
@@ -130,6 +147,11 @@ chf:
             "version":"{{ .Values.rsync.configVersion }}",
             "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/roamingzonedetermination/",
             "destinationPath":"/opt/deploy/SBA/config/product-config/rzd"
+      },
+      {
+            "version":"{{ .Values.rsync.configVersion }}",
+            "sourcePath":"rsync@{{ .Values.rsyncd.service.name }}.{{ .Release.Namespace }}.svc{{ template "appendDnsPostfix" . }}:/source_data/subscriber-tracing/",
+            "destinationPath":"/opt/deploy/SBA/refData/subscriberTracing"
       }
     ]
 
@@ -191,6 +213,13 @@ slc:
       limits:
         cpu: 500m
         memory: 1.5G
+  kafkaAppender:
+    enabled: true
+    bootstrapServers: "odf-cluster-kafka-bootstrap.cgf.svc.cluster.local:9092"
+    schemaRegistryUrl: "http://odf-cluster-schema-registry.cgf.svc.cluster.local:8081"
+    tlsEnabled: false
+  elasticAppender:
+    enabled: false
   jvm:
     options:
       log4j2-opts:
@@ -261,7 +290,7 @@ drb:
     resources:
       requests:
         cpu: 300m
-        memory: 1.5G
+        memory: 1G
       limits:
         cpu: 2 
         memory: 4G
@@ -379,10 +408,23 @@ signaling-manager:
   installRsync: "false"
   helm:
     replicas: 1
+    service:
+      createIndividualPodService: true
+      cteStartUpTimeout: 300
+      externalIPs: []
+      externalTrafficPolicy: ""
+      lbEnable: true
+      lbType: LoadBalancer
+      name: sigm
+      nodePortEnable: false
+    podService:
+      - externalTrafficPolicy: Cluster
+        type: LocalBalancer
+        loadBalancerIP: 10.249.235.100
     resources:
       requests:
         cpu: 300m
-        memory: 1.5G
+        memory: 1G
       limits:
         cpu: 2
         memory: 4G 
@@ -442,7 +484,7 @@ ro:
     resources:
       requests:
         cpu: 300m 
-        memory: 1.5G
+        memory: 1G
       limits:
         cpu: 2 
         memory: 4G
@@ -527,14 +569,20 @@ rogers-cog-notification:
   camel:
     component:
       customProperties:
-        - name: kafka.bootstrap.servers
+        - name: kafka.bootstrap.servers.edr
           value: "odf-cluster-kafka-0.odf-cluster-kafka-brokers.cgf.svc:9092"
-        - name: kafka.schema.registry.url
+        - name: kafka.schema.registry.url.edr
+          value:
+        - name: kafka.bootstrap.servers.rogers
+          value: "odf-cluster-kafka-0.odf-cluster-kafka-brokers.cgf.svc:9092"
+        - name: kafka.schema.registry.url.rogers
           value:
         - name: kafka.topic.notification.edr
           value: "topic-notify-odf"
         - name: kafka.topic.notification.rogers
           value: "topic-rogers-events"
+        - name: kafka.rogers.enableSSL
+          value: "true"
       consul:
         serviceRegistry:
           serviceName: notification
@@ -558,7 +606,7 @@ rogers-cog-notification:
     image:
       registry: harbor.rogers.lab/openet-software
       repository: rogers/rogers-cog-notification
-      tag: 0.0.1-SNAPSHOT
+      tag: 0.0.2-SNAPSHOT
       pullPolicy: "Always"
   runtimeContainer:
     image:

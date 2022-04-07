@@ -4,8 +4,7 @@ global:
   tls:
     enabled: false
   ocGui:
-    externalWebOrigin: http://localhost:31020
-    internalWebOrigin: http://gateway-proxy:80
+    externalWebOrigin: http://10.249.235.104
   keycloak:
     externalWebOrigin: ""
 
@@ -14,9 +13,9 @@ gloo-kubernetes:
     gatewayProxies:
       gatewayProxy:
         service:
-          type: NodePort
-          httpNodePort: 31020
-          httpsNodePort: 31021
+          type: LoadBalancer
+          loadBalancerIP: 10.249.235.104
+          externalTrafficPolicy: Cluster
     gloo:
       deployment:
         resources:

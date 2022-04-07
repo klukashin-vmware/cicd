@@ -14,7 +14,7 @@ global:
       https:
         enabled: false
   serviceManagementGui:
-    externalWebOrigin: http://localhost:31032
+    externalWebOrigin: http://10.249.235.102
   keycloak:
     externalWebOrigin: ""
 
@@ -23,9 +23,9 @@ gloo-kubernetes:
     gatewayProxies:
       gatewayProxy:
         service:
-          type: NodePort
-          httpNodePort: 31032
-          httpsNodePort: 31033
+          type: LoadBalancer
+          loadBalancerIP: 10.249.235.102
+          externalTrafficPolicy: Cluster
     gloo:
       deployment:
         resources:

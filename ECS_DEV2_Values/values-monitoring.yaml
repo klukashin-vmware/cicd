@@ -18,9 +18,9 @@ gloo-kubernetes:
     gatewayProxies:
       gatewayProxy:
         service:
-          type: NodePort
-          httpNodePort: 30090
-          httpsNodePort: 30089
+          type: LoadBalancer
+          loadBalancerIP: 10.249.235.105
+          externalTrafficPolicy: Cluster
     gloo:
       deployment:
         image:
@@ -574,9 +574,6 @@ logstash:
           index => "openet-watcher-http"
           document_type => "_doc"
         }
-        exec {
-          command => "sendAsSNMPTrap.sh ${SNMP_MANAGER_HOST:snmptrap-manager} '${SNMP_TRAP_PROTOCOL_CMDLINE:-v 2c -c public }' '%{alarm}' '%{kubernetes}'"
-        }
       }
 
     http-tcp-pipeline.conf: |
@@ -738,9 +735,6 @@ logstash:
     - name: es-certs-internal
       secretName: monitoring-elasticsearch-es-http-certs-internal
       path: /usr/share/logstash/config/es-certs
-  envFrom:
-  - secretRef:
-      name: monitoring-snmp-v3-creds
   extraEnvs:
     - name: ELASTICSEARCH_HOST
       value: monitoring-elasticsearch-es-http.monitoring.svc
@@ -763,10 +757,6 @@ logstash:
       value: "11211"
     - name: TCP_RECONN_INTERVAL
       value: "10"
-    - name: SNMP_MANAGER_HOST
-      value: snmp-manager
-    - name: SNMP_TRAP_PROTOCOL_CMDLINE
-      value: "-v 3 -n \"\" -a ${SNMP_V3_AUTH_ENCRYPTION_METHOD} -A ${SNMP_V3_AUTH_ENCRYPTION_PASSWORD} -x ${SNMP_V3_PRIVACY_ENCRYPTION_METHOD} -X ${SNMP_V3_PRIVACY_ENCRYPTION_PASSWORD} -l authPriv -u ${SNMP_V3_USERNAME} -e ${SNMP_V3_ENGINE_IDENTIFIER} "
   service:
     type: ClusterIP
     ports:
@@ -796,14 +786,7 @@ logstash:
           while [[ "$(curl -skIL -o /dev/null -w '%{http_code}\n' http://monitoring-kibana-kb-http:5601/login)" != "200" ]]; do sleep 10 && echo "Waiting for kibana"; done
 
 snmpV3Security:
-  enabled: true
-  secrets:
-    username: cm9nZXJz
-    authEngineIdentifier: MHg4MDAwMDAwMEMwQTg0MDA0
-    authEncryptionMethod: U0hB
-    authEncryptionPassword: c3lzdGVtdGVzdA==
-    privacyEncryptionMethod: QUVT
-    privacyEncryptionPassword: c3lzdGVtdGVzdA==
+  enabled: false
 
 filebeat:
   managedServiceAccount: true
@@ -838,11 +821,14 @@ metricbeat:
   enableRbac: true
   setup:
     dashboards:
-      enabled: false  
+      enabled: false
   resources:
     requests:
-      cpu: 50m
-      memory: 200Mi
+      cpu: 150m
+      memory: 250Mi
+    limits:
+      cpu: 1
+      memory: 500Mi
   image:
     repository: harbor.rogers.lab/openet-dependencies/beats/metricbeat
   customModules:

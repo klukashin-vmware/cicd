@@ -9,9 +9,9 @@ gloo-kubernetes:
     gatewayProxies:
       gatewayProxy:
         service:
-          type: NodePort
-          httpNodePort: 32018
-          httpsNodePort: 32019
+          type: LoadBalancer
+          loadBalancerIP: 10.249.235.103
+          externalTrafficPolicy: Cluster
     gloo:
       deployment:
         image:
@@ -32,11 +32,11 @@ keycloak:
         cpu: 1
         memory: 1G
   guiClientUrlMappings:
-    app-selector:
-    jaeger-ui:
-    kibana:
-    oc-gui:
-    profilemanager:
+    app-selector: http://10.249.235.102/app-selector
+    jaeger-ui: http://10.249.235.105/jaeger
+    kibana: http://10.249.235.105/kibana
+    oc-gui: http://10.249.235.104/offercatalog-gui
+    profilemanager: http://10.249.235.102/service-management-gui
     pcf-gui:
     odf-gui:
   initContainer:
