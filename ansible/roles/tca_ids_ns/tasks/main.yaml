@@ -26,7 +26,7 @@
   register: tca_cluster_results
 
 - set_fact:
-    vim_cluster_id: "{{ tca_cluster_results.json.vimId }}"
+    vim_cluster_id: "{{ tca_cluster_results.json[0].vimId }}"
 
 #- name: get cluster vimID
 #  set_fact:
