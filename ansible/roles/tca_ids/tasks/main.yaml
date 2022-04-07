@@ -51,7 +51,7 @@
 - debug: var=tca_cluster_results
 
 - set_fact:
-    management_cluster_id: "{{ tca_cluster_results.json.id }}"
+    management_cluster_id: "{{ tca_cluster_results.json[0].id }}"
 
 #- name: get management cluster ID
 #  set_fact:
