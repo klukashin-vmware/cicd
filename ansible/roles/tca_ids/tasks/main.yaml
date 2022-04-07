@@ -33,20 +33,23 @@
 
 - debug: var=cluster_template_id
 
-#- name: Get clusters
-#  uri:
-#    validate_certs: "{{ tca_validate_certificates }}"
-#    url: "https://{{ tca_fqdn }}/hybridity/api/infra/k8s/clusters"
-#    method: GET
-#    return_content: yes
-#    status_code: [200]
-#    body_format: json
-#    timeout: 180
-#    headers:
-#      Content-Type: "application/json"
-#      Accept: "application/json"
-#      x-hm-authorization: "{{ tca_authorization  }}"
-#  register: tca_cluster_results
+- name: Get clusters
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/hybridity/api/infra/k8s/clusters?filter=(eq,clusterName,{{ management_cluster_name }})"
+    method: GET
+    return_content: yes
+    status_code: [200]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+  register: tca_cluster_results
+
+- set_fact:
+    management_cluster_id: "{{ tca_cluster_results.json.id }}"
 
 #- name: get management cluster ID
 #  set_fact:
@@ -54,7 +57,7 @@
 #  with_items: "{{ tca_cluster_results.json }}"
 #  when: item.clusterName == "{{ management_cluster_name }}"
 
-#- debug: var=management_cluster_id
+- debug: var=management_cluster_id
 
 - name: replace
   replace:
@@ -62,9 +65,9 @@
     regexp: "{{ cluster_template_name }}"
     replace: "{{ cluster_template_id }}"
 
-#- name: replace
-#  replace:
-#    path: mycluster.j2
-#    regexp: "{{ management_cluster_name }}"
-#    replace: "{{ management_cluster_id }}"
+- name: replace
+  replace:
+    path: mycluster.j2
+    regexp: "{{ management_cluster_name }}"
+    replace: "{{ management_cluster_id }}"
 
