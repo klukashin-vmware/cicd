@@ -48,6 +48,8 @@
       x-hm-authorization: "{{ tca_authorization  }}"
   register: tca_cluster_results
 
+- debug: var=tca_cluster_results
+
 - set_fact:
     management_cluster_id: "{{ tca_cluster_results.json.id }}"
 
