@@ -1,0 +1,11 @@
+---
+- name: "Check csars"
+  hosts: localhost
+  gather_facts: no
+
+  vars_files:
+    - ./default/main.yaml
+
+  roles:
+    - { role: tca_api }
+    - { role: smoke_tests_pre_check_3 }      
