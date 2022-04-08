@@ -1,0 +1,11 @@
+---
+- name: "Check NF Instances"
+  hosts: localhost
+  gather_facts: no
+
+  vars_files:
+    - ./default/main.yaml
+
+  roles:
+    - { role: tca_api }
+    - { role: smoke_tests_post_deployment_1 }      

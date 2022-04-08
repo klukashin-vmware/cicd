@@ -1,3 +1,4 @@
+cluster: rtrm-qa1
 harbor_project_main: openet-software
 harbor_project_dependencies: openet-dependencies
 image_name:
@@ -6,9 +7,54 @@ image_name:
   - jetstack/cert-manager-cainjector    
 image_version: v1.0.4
 chart_name:
-  - cert-manager        
-chart_version: v1.0.3   
+  - cert-manager
+  - certmanager-ca
+  - consul
+  - keycloak-assembly
+  - elastic-cloud-kubernetes-crds
+  - monitoring
+  - jaeger-assembly
+  - ads
+  - udsf-assembly
+  - provisioning-assembly
+  - rogers-ecs-assembly  
+  - offercatalog-gui-assembly
+  - strimzi-kafka-operator  
+  - odf-assembly
+  - rogers-sftp-server  
+chart_version: 
+  - v1.0.3
+  - 1.2.0
+  - 0.29.0
+  - 1.13.1
+  - 2.1.4
+  - 2.4.4
+  - 1.1.2
+  - 1.7.0
+  - 1.2.9
+  - 1.6.0
+  - 3.1.0
+  - 1.15.0
+  - 2.6.1
+  - 2.6.0
+  - 1.2.3  
 csar_name:
-  - openet-certmanager-                
+  - openet-certmanager-
+  - openet-certmanagerca
+  - openet-consul-secret
+  - openet-keycloak-1.13.1
+  - openet-umseckcrd
+  - openet-monitoring
+  - openet-jaeger
+  - openet-ads
+  - openet-udsf-volt
+  - openet-udsf
+  - openet-provisioning-volt
+  - openet-provisionng
+  - openet-ecs
+  - openet-ocgui
+  - openet-strimzi-kafka-operator-261
+  - openet-odf
+  - openet-sftp-server  
 sw_version: 8.6
 
