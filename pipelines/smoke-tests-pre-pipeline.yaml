@@ -1,0 +1,39 @@
+---
+resource_types:
+- name: ssh
+  type: docker-image
+  source:
+    repository: quay.io/henry40408/concourse-ssh-resource
+
+resources:
+- name: ansible
+  type: ssh
+  source:
+    host: 10.0.2.165
+    user: vmware
+    password: R0gers!23
+jobs:
+- name: check-images
+  public: true
+  plan:
+  - put: ansible
+    params:
+      interpreter: /bin/sh
+      script: |
+        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-pre1.yaml
+- name: check-charts
+  public: true
+  plan:
+  - put: ansible
+    params:
+      interpreter: /bin/sh
+      script: |
+        ansible-playbook ./cicd/ansible/playbook-st-pre2.yaml && rm -rf cicd        
+- name: check-csars
+  public: true
+  plan:
+  - put: ansible
+    params:
+      interpreter: /bin/sh
+      script: |
+        ansible-playbook ./cicd/ansible/playbook-st-pre3.yaml && rm -rf cicd        
