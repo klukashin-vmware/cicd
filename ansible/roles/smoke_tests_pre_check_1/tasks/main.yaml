@@ -1,0 +1,17 @@
+- name: read params from input file
+  vars:
+    smoketests_param_file: "{{ lookup('file','ecsSmokeTestsParams.yaml') | from_yaml }}"
+  set_fact:
+    harbor_project_main: "{{ smoketests_param_file.harbor_project_main }}"
+    harbor_project_dependencies: "{{ smoketests_param_file.harbor_project_dependencies }}"
+    image_name: "{{ smoketests_param_file.image_name }}"
+    image_version: "{{ smoketests_param_file.image_version }}"
+    chart_name: "{{ smoketests_param_file.chart_name }}"
+    chart_version: "{{ smoketests_param_file.chart_version }}"
+    csar_name: "{{ smoketests_param_file.csar_name }}"
+    sw_version: "{{ smoketests_param_file.sw_version }}"    
+
+- name: Check image exists in Harbor
+  ansible.builtin.shell: docker pull {{ harbor_fqdn }}/{{ harbor_project_dependencies }}/{{ item }}:{{ image_version }}
+  with_items: "{{ image_name }}"
+
