@@ -1,4 +1,4 @@
-cluster: rtrm-qa1
+cluster: rtrm-qa2
 harbor_project_main: openet-software
 harbor_project_dependencies: openet-dependencies
 image_name:
