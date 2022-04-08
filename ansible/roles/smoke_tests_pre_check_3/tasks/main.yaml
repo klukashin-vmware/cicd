@@ -1,0 +1,167 @@
+- name: read params from input file
+  vars:
+    smoketests_param_file: "{{ lookup('file','ecsSmokeTestsParams.yaml') | from_yaml }}"
+  set_fact:
+    harbor_project_main: "{{ smoketests_param_file.harbor_project_main }}"
+    harbor_project_dependencies: "{{ smoketests_param_file.harbor_project_dependencies }}"
+    image_name: "{{ smoketests_param_file.image_name }}"
+    image_version: "{{ smoketests_param_file.image_version }}"
+    chart_name: "{{ smoketests_param_file.chart_name }}"
+    chart_version: "{{ smoketests_param_file.chart_version }}"
+    csar_name: "{{ smoketests_param_file.csar_name }}"
+    sw_version: "{{ smoketests_param_file.sw_version }}"    
+
+- name: Get all csars in TCA
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/telco/api/vnfpkgm/v2/vnf_packages"
+    method: GET
+    return_content: yes
+    status_code: [200, 201]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+      Version: v2
+  register: tca_csar_results
+
+- debug: var=tca_csar_results.json
+  when: debuglevel | int > 0
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_0: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}" 
+  when: item.userDefinedData.name == "{{ csar_name[0] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"  
+
+- debug: msg="{{ csar_id_0 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_1: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[1] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_1 }} is defined"  
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_2: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[2] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_2 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_3: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[3] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_3 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_4: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[4] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_4 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_5: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[5] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_5 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_6: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[6] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_6 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_7: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[7] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_7 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_8: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[8] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_8 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_9: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[9] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_9 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_10: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[10] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_10 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_11: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[11] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_11 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_12: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[12] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_12 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_13: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[13] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_13 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_14: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[14] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_14 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_15: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[15] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_15 }} is defined"
+
+- name: Check csar/version exists in TCA
+  set_fact:
+    csar_id_16: "{{ item.id }}"
+  with_items: "{{ tca_csar_results.json }}"
+  when: item.userDefinedData.name == "{{ csar_name[16] }}" and item.vnfSoftwareVersion == "{{ sw_version }}"
+
+- debug: msg="{{ csar_id_16 }} is defined"
