@@ -1,0 +1,33 @@
+- name: read params from input file
+  vars:
+    smoketests_param_file: "{{ lookup('file','ecsSmokeTestsParams.yaml') | from_yaml }}"
+  set_fact:
+    cluster: "{{ smoketests_param_file.cluster }}"
+
+- name: Get all failed csars instances in TCA
+  uri:
+    validate_certs: "{{ tca_validate_certificates }}"
+    url: "https://{{ tca_fqdn }}/telco/api/vnflcm/v2/vnf_instances?filter=(eq,lcmOperationState,FAILED)"
+    method: GET
+    return_content: yes
+    status_code: [200, 201]
+    body_format: json
+    timeout: 180
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      x-hm-authorization: "{{ tca_authorization  }}"
+      Version: v2
+  register: tca_csar_instances_results
+
+- debug: var=tca_csar_instances_results.json
+
+- name: Check failed NF instances on the cluster
+  set_fact:
+    failed_nf: "{{ item.id }}"
+  with_items: "{{ tca_csar_instances_results.json }}"
+  when: item.vimConnectionInfo[0].extra.vimName == "{{ cluster }}"
+
+- debug: msg="Checking in found failed NF on the cluster"
+  failed_when: failed_nf is defined
+
