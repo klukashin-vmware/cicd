@@ -1,0 +1,11 @@
+- name: read params from input file
+  vars:
+    smoketests_param_file: "{{ lookup('file','ecsSmokeTestsParams.yaml') | from_yaml }}"
+  set_fact:
+    cluster: "{{ smoketests_param_file.cluster }}"
+
+- name: set kubeconfig
+  ansible.builtin.shell: |
+          kubectl --kubeconfig /home/vmware/.kube/{{ cluster }} get po --all-namespaces | gawk 'match($3, /([0-9])+\/([0-9])+/, a) {if (a[1] < a[2] && $4 != "Completed") print $0}'
+  register: kubectl_pods_results
+  failed_when: kubectl_pods_results.stdout|length > 0          
