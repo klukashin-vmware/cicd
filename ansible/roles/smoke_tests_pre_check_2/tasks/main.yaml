@@ -1,0 +1,24 @@
+- name: read params from input file
+  vars:
+    smoketests_param_file: "{{ lookup('file','ecsSmokeTestsParams.yaml') | from_yaml }}"
+  set_fact:
+    harbor_project_main: "{{ smoketests_param_file.harbor_project_main }}"
+    harbor_project_dependencies: "{{ smoketests_param_file.harbor_project_dependencies }}"
+    image_name: "{{ smoketests_param_file.image_name }}"
+    image_version: "{{ smoketests_param_file.image_version }}"
+    chart_name: "{{ smoketests_param_file.chart_name }}"
+    chart_version: "{{ smoketests_param_file.chart_version }}"
+    csar_name: "{{ smoketests_param_file.csar_name }}"
+    sw_version: "{{ smoketests_param_file.sw_version }}"    
+
+- name: Add repo
+  ansible.builtin.shell: helm repo add --ca-file ca.crt --username={{ harbor_username }} --password={{ harbor_password }} myrepo https://harbor.rogers.lab/chartrepo/{{ harbor_project_main }}
+
+- name: Search for chart in repo
+  ansible.builtin.shell: helm search repo --version {{ chart_version[item[0]] }} myrepo/{{ item[1] }}
+  with_indexed_items: "{{ chart_name }}"
+  register: helm_results
+  failed_when: helm_results.stdout == "No results found"
+
+- name: Remove repo
+  ansible.builtin.shell: helm repo remove myrepo
