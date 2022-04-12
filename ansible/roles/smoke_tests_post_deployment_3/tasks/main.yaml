@@ -1,0 +1,13 @@
+- name: read params from input file
+  vars:
+    smoketests_param_file: "{{ lookup('file','ecsSmokeTestsParams.yaml') | from_yaml }}"
+  set_fact:
+    cluster: "{{ smoketests_param_file.cluster }}"
+
+- name: run Jmeter script
+  ansible.builtin.shell: |
+          cd ~/UTF/testHome
+  delegate_to: "{{ jmeter_vm }}"
+  register: jmeter_script_results
+
+- debug: var=jmeter_script_results  
