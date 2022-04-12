@@ -5,8 +5,7 @@
     cluster: "{{ smoketests_param_file.cluster }}"
 
 - name: run Jmeter script
-  ansible.builtin.shell: |
-    cd ~/UTF/testHome
+  shell: cd ~/UTF/testHome
   register: jmeter_script_results
 
 - debug: var=jmeter_script_results  
