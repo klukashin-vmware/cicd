@@ -6,7 +6,7 @@
 
 - name: run Jmeter script
   ansible.builtin.shell: |
-          cd ~/UTF/testHome
+    cd ~/UTF/testHome
   register: jmeter_script_results
 
 - debug: var=jmeter_script_results  
