@@ -30,3 +30,5 @@ time_zone: America/Los_Angeles
 
 debuglevel: 2
 
+jmeter_vm: 10.0.2.146
+
