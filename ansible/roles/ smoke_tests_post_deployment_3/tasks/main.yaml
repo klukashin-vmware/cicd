@@ -7,7 +7,6 @@
 - name: run Jmeter script
   ansible.builtin.shell: |
           cd ~/UTF/testHome
-  delegate_to: "{{ jmeter_vm }}"
   register: jmeter_script_results
 
 - debug: var=jmeter_script_results  
