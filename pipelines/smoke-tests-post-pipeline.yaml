@@ -36,7 +36,7 @@ jobs:
       script: |
         rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-post2.yaml && rm -rf cicd
 
-- name: check-pods
+- name: run-jmeter-script
   public: true
   plan:
   - put: jmeter-vm
