@@ -2,7 +2,7 @@ cluster: rtrm-dev2
 harbor_project_main: openet-software
 harbor_project_dependencies: openet-dependencies
 image_name:
-  - jetstack/cert-manager-controller
+  - jetstack/cert-manager-controller-fake
   - jetstack/cert-manager-webhook
   - jetstack/cert-manager-cainjector    
 image_version: v1.0.4
