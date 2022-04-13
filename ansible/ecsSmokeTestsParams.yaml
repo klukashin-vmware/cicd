@@ -39,7 +39,7 @@ chart_version:
   - 2.6.0
   - 1.2.3  
 csar_name:
-  - openet-certmanager-
+  - openet-certmanager-fake
   - openet-certmanagerca
   - openet-consul-secret
   - openet-keycloak-1.13.1
