@@ -2,10 +2,16 @@
   vars:
     smoketests_param_file: "{{ lookup('file','ecsSmokeTestsParams.yaml') | from_yaml }}"
   set_fact:
-    cluster: "{{ smoketests_param_file.cluster }}"
+    env: "{{ smoketests_param_file.env }}"
 
 - name: run Jmeter script
-  shell: cd ~/UTF/testHome && ls -l
+  shell: |  
+     cd ~/UTF/testHome
+     cp properties/LECS.properties.rogersdev_{{ env }} properties/LECS.properties.rogersdev
+     ./atf.sh properties/atf.properties tests/Sanity_Tests_MultipleInstances/
+     rm -rf properties/LECS.properties.rogersdev
+     Result=`cat newreport/report.txt | grep Failed`
+     mv ./newreport ./Test_Results_$current_time/newreport_{{ env }}_$current_time  
   register: jmeter_script_results
 
 - debug: var=jmeter_script_results  
