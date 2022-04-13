@@ -5,7 +5,7 @@
     cluster: "{{ smoketests_param_file.cluster }}"
 
 - name: run Jmeter script
-  shell: cd ~/UTF/testHome
+  shell: cd ~/UTF/testHome && ls -l
   register: jmeter_script_results
 
 - debug: var=jmeter_script_results  
