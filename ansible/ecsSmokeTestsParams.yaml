@@ -7,7 +7,7 @@ image_name:
   - jetstack/cert-manager-cainjector    
 image_version: v1.0.4
 chart_name:
-  - cert-manager
+  - cert-manager-fake
   - certmanager-ca
   - consul
   - keycloak-assembly
