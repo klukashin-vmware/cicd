@@ -1,0 +1,10 @@
+---
+- name: "check services/External IPs"
+  hosts: localhost
+  gather_facts: no
+
+  vars_files:
+    - ./default/main.yaml
+
+  roles:
+    - { role: smoke_tests_post_deployment_4 }      
