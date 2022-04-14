@@ -20,7 +20,7 @@ jobs:
     params:
       interpreter: /bin/sh
       script: |
-        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-pre1.yaml
+        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-pre1.yaml && rm -rf cicd
 - name: check-charts
   public: true
   plan:
@@ -28,7 +28,7 @@ jobs:
     params:
       interpreter: /bin/sh
       script: |
-        ansible-playbook ./cicd/ansible/playbook-st-pre2.yaml && rm -rf cicd        
+        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-pre2.yaml && rm -rf cicd        
 - name: check-csars
   public: true
   plan:
@@ -36,4 +36,4 @@ jobs:
     params:
       interpreter: /bin/sh
       script: |
-        ansible-playbook ./cicd/ansible/playbook-st-pre3.yaml && rm -rf cicd        
+        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-pre3.yaml && rm -rf cicd        
