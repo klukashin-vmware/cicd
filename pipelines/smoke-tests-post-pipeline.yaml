@@ -45,6 +45,15 @@ jobs:
       script: |
         rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-post4.yaml && rm -rf cicd
 
+- name: check-pvc
+  public: true
+  plan:
+  - put: ansible
+    params:
+      interpreter: /bin/sh
+      script: |
+        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-post5.yaml && rm -rf cicd        
+
 - name: run-jmeter-scripts
   public: true
   plan:
