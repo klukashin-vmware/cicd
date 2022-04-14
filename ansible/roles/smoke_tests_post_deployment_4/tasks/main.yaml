@@ -1,0 +1,11 @@
+- name: read params from input file
+  vars:
+    smoketests_param_file: "{{ lookup('file','ecsSmokeTestsParams.yaml') | from_yaml }}"
+  set_fact:
+    cluster: "{{ smoketests_param_file.cluster }}"
+
+- name: check for services with NULL External IP
+  ansible.builtin.shell: |
+          kubectl --kubeconfig /home/vmware/.kube/{{ cluster }} get service --all-namespaces  -ojson | jq '.items[] | select(.spec.type=="LoadBalancer") | select(.spec.loadBalancerIP == null) | .metadata.name'
+  register: kubectl_services_results
+  failed_when: kubectl_services_results.stdout|length > 0          
