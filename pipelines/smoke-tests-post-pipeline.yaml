@@ -36,11 +36,20 @@ jobs:
       script: |
         rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-post2.yaml && rm -rf cicd
 
-- name: run-jmeter-script
+- name: check-services
+  public: true
+  plan:
+  - put: ansible
+    params:
+      interpreter: /bin/sh
+      script: |
+        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-post4.yaml && rm -rf cicd
+
+- name: run-jmeter-scripts
   public: true
   plan:
   - put: jmeter-vm
     params:
       interpreter: /bin/sh
       script: |
-        rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook ./cicd/ansible/playbook-st-post3.yaml && rm -rf cicd
+        export GIT_SSL_NO_VERIFY=1 && rm -rf cicd && git clone https://gitea.rogers.lab/klukashin/cicd && ansible-playbook /home/openet/cicd/ansible/playbook-st-post3.yaml && rm -rf cicd
