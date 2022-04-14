@@ -1,4 +1,4 @@
-cluster: rtrm-qa1
+cluster: rtrm-dev2
 env: QA1
 harbor_project_main: openet-software
 harbor_project_dependencies: openet-dependencies
