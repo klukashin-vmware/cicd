@@ -1,4 +1,4 @@
-cluster: test-cicd-cluster
+cluster: rtrm-qa1
 env: QA1
 harbor_project_main: openet-software
 harbor_project_dependencies: openet-dependencies
