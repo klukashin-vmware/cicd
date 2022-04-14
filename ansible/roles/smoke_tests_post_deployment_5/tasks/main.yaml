@@ -1,0 +1,11 @@
+- name: read params from input file
+  vars:
+    smoketests_param_file: "{{ lookup('file','ecsSmokeTestsParams.yaml') | from_yaml }}"
+  set_fact:
+    cluster: "{{ smoketests_param_file.cluster }}"
+
+- name: check pvc's are in Bound state
+  ansible.builtin.shell: |
+          kubectl --kubeconfig /home/vmware/.kube/{{ cluster }} get pvc --all-namespaces -ojson | jq '.items[] | select(.status.phase!="Bound") | .metadata.name'
+  register: kubectl_pvc_results
+  failed_when: kubectl_pvc_results.stdout|length > 0          
